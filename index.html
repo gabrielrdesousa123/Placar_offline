@@ -5,16 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Placar Bocha Offline — SCBP</title>
 <style>
-/* ── RESET & BASE (cópia fiel do live-scoresheet) ─────────────────── */
 html, body { overflow: hidden !important; height: 100vh; width: 100vw; margin: 0; padding: 0; background: #000; font-family: sans-serif; }
 body::-webkit-scrollbar { display: none; }
 * { box-sizing: border-box; }
 
-/* ── SETUP SCREEN ─────────────────────────────────────────────────── */
 #setup-screen { position: fixed; inset: 0; z-index: 9000; background: #0f172a; display: flex; align-items: center; justify-content: center; }
 .setup-card { background: #1e293b; border-radius: 16px; padding: 32px; width: 100%; max-width: 580px; border: 2px solid #334155; }
 .setup-card h1 { text-align: center; font-size: 26px; color: #fff; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
 .setup-card p { text-align: center; color: #94a3b8; margin-bottom: 24px; font-size: 14px; }
+
+.lang-bar { display: flex; justify-content: center; gap: 6px; margin-bottom: 18px; }
+.lang-btn { padding: 6px 16px; border: 2px solid #334155; border-radius: 20px; background: transparent; color: #94a3b8; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.lang-btn:hover { border-color: #fbbf24; color: #fbbf24; }
+.lang-btn.active { border-color: #fbbf24; background: rgba(251,191,36,0.15); color: #fbbf24; }
+
 .class-section label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #fbbf24; margin-bottom: 8px; }
 .class-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; }
 .class-btn { padding: 10px 6px; border: 2px solid #334155; border-radius: 8px; background: #0f172a; color: white; font-size: 12px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
@@ -38,7 +42,6 @@ body::-webkit-scrollbar { display: none; }
 .btn-start { width: 100%; padding: 16px; border: none; border-radius: 12px; background: #fbbf24; color: #0f172a; font-size: 18px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s; }
 .btn-start:active { transform: scale(0.98); }
 
-/* ── LIVE CONTAINER (cópia fiel) ──────────────────────────────────── */
 .live-container { margin: 0; padding: 0; background: #000; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 .live-header { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 0 25px; border-bottom: 2px solid #334155; color: white; height: 60px; flex-shrink: 0; }
 .header-end-title { text-align: center; font-size: 20px; font-weight: 900; color: #fbbf24; text-transform: uppercase; letter-spacing: 2px; }
@@ -46,18 +49,15 @@ body::-webkit-scrollbar { display: none; }
 .btn-hamburger { background: transparent; border: none; color: white; font-size: 24px; cursor: pointer; padding: 10px; transition: 0.2s; }
 .btn-hamburger:hover { color: #3b82f6; }
 
-/* ── PANELS (cópia fiel) ──────────────────────────────────────────── */
 .panels-grid { display: flex; position: relative; flex: 1; overflow: hidden; }
 .panel { flex: 1; display: flex; flex-direction: column; color: white; position: relative; transition: background-color 0.3s ease; overflow: hidden; }
 .panel-red { background: #dc2626; border-right: 2px solid #000; }
 .panel-blue { background: #2563eb; border-left: 2px solid #000; }
 
-/* ── PLAYER HEAD (cópia fiel) ─────────────────────────────────────── */
 .p-head { padding: 10px 15px; text-align: center; text-transform: uppercase; line-height: 1.1; background: rgba(0,0,0,0.2); position: relative; min-height: 95px; display: flex; flex-direction: column; justify-content: center; align-items: center; flex-shrink: 0; }
 #p1-name-display, #p2-name-display { font-weight: 900; color: #fff; margin-top: 5px; width: 100%; word-break: break-word; white-space: normal; line-height: 1.1; text-shadow: 0 2px 4px rgba(0,0,0,0.5); position: relative; z-index: 2; padding: 0 1vw; text-transform: uppercase; font-size: clamp(18px, 3vw, 32px); }
 .p-club-name { font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.9); margin-top: 4px; letter-spacing: 1px; z-index: 2; position: relative; text-shadow: 0 1px 3px rgba(0,0,0,0.5); width: 100%; word-break: break-word; white-space: normal; line-height: 1.1; text-transform: uppercase; }
 
-/* ── BODY / SCORE / TIMER (cópia fiel) ────────────────────────────── */
 .p-body { padding: 12px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; overflow-y: hidden; position: relative; gap: 2.5vh; }
 .score-area { width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; padding-bottom: 1vh; margin-top: 10px; }
 .score-label { font-weight: bold; color: rgba(255,255,255,0.8); font-size: 13px; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px; }
@@ -69,7 +69,6 @@ body::-webkit-scrollbar { display: none; }
 .btn-play-icon:hover:not(:disabled) { color: white; transform: scale(1.1); filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)); }
 .btn-play-icon:disabled { opacity: 0.3; cursor: not-allowed; }
 
-/* ── BALLS (cópia fiel) ───────────────────────────────────────────── */
 .balls-wrapper { display: flex; align-items: center; gap: 18px; margin-top: 0; background: rgba(0,0,0,0.25); padding: 10px 24px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 430px; justify-content: space-between; }
 .btn-ball-ctrl { background: rgba(255,255,255,0.2); border: none; color: white; font-size: 30px; font-weight: bold; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: 0.2s; }
 .btn-ball-ctrl:hover { background: rgba(255,255,255,0.4); transform: scale(1.1); }
@@ -79,7 +78,6 @@ body::-webkit-scrollbar { display: none; }
 .blue-ball { background: #93c5fd; }
 .boccia-ball.played { opacity: 0.2; filter: grayscale(70%); box-shadow: none; transform: scale(0.85); }
 
-/* ── VIOLATIONS (cópia fiel) ──────────────────────────────────────── */
 .btn-viol { background: rgba(0,0,0,0.5); color: #fbbf24; border: 1px dashed rgba(255,255,255,0.4); padding: 13px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 0; width: 100%; max-width: 430px; text-transform: uppercase; font-size: 16px; transition: 0.2s; }
 .btn-viol:hover { background: rgba(0,0,0,0.8); border-style: solid; }
 .viol-list-main { display: flex; flex-direction: column; gap: 5px; margin-top: 5px; width: 100%; max-width: 80%; align-self: center; height: 100px; overflow-y: auto; padding-right: 5px; }
@@ -93,7 +91,6 @@ body::-webkit-scrollbar { display: none; }
 .main-del-viol { background: transparent; border: none; color: #fca5a5; font-weight: bold; cursor: pointer; font-size: 20px; margin-left: 10px; padding: 0; line-height: 1; transition: 0.2s; }
 .main-del-viol:hover { color: #ef4444; transform: scale(1.2); }
 
-/* ── CENTER OVERLAY (cópia fiel) ──────────────────────────────────── */
 .center-overlay { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; width: auto; }
 .box-stopped { display: flex; flex-direction: column; gap: 8px; background: rgba(15, 23, 42, 0.95); padding: 10px 14px; border-radius: 12px; box-shadow: 0 6px 25px rgba(0,0,0,0.8); border: 2px solid #334155; backdrop-filter: blur(5px); pointer-events: auto; max-width: 200px; }
 .btn-center { background: #334155; color: white; border: 2px solid #475569; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 3px 5px rgba(0,0,0,0.3); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -101,16 +98,13 @@ body::-webkit-scrollbar { display: none; }
 .btn-center:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
 .btn-center-highlight { border-color: #fbbf24; color: #fef08a; background: #854d0e; }
 
-/* ── TB SCORE (cópia fiel) ────────────────────────────────────────── */
 .tb-score-display { position: absolute; left: -50px; font-size: 30px; color: #fbbf24; font-weight: bold; display: none; }
 
-/* ── PENALTY CHIP (cópia fiel) ────────────────────────────────────── */
 .penalty-ball-container { position: absolute; right: -80px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 10; }
 .chip-1p { background: #eab308; color: #1e293b; border: 3px solid #fef08a; border-radius: 24px; min-width: 58px; height: 44px; padding: 0 12px; font-size: 17px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: 0.2s; white-space: nowrap; }
 .chip-1p.pend:hover { transform: scale(1.1); background: #fef08a; }
 .chip-1p.done { background: #22c55e; border-color: #bbf7d0; color: #052e16; opacity: 0.85; cursor: default; }
 
-/* ── SIDEBAR (cópia fiel) ─────────────────────────────────────────── */
 .sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: #0f172a; border-right: 2px solid #334155; z-index: 9999; display: flex; flex-direction: column; transition: left 0.3s ease; box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
 .sidebar.open { left: 0; }
 .sidebar-header { padding: 20px; font-size: 20px; font-weight: bold; color: white; border-bottom: 1px solid #334155; text-align: center; background: #020617; }
@@ -119,7 +113,6 @@ body::-webkit-scrollbar { display: none; }
 .sidebar-btn.close-btn { background: #7f1d1d; text-align: center; border: none; margin-top: auto; }
 .sidebar-btn.close-btn:hover { background: #b91c1c; padding-left: 20px; }
 
-/* ── MODALS ───────────────────────────────────────────────────────── */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9998; display: none; }
 .central-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: none; flex-direction: column; gap: 20px; z-index: 10000; color: black; border: 4px solid #0f172a; min-width: 400px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
 .central-modal h3 { margin: 0; font-size: 18px; text-transform: uppercase; color: #1e293b; text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
@@ -129,14 +122,12 @@ body::-webkit-scrollbar { display: none; }
 .btn-primary { background: #0d6efd; color: white; }
 .btn-secondary { background: #e2e8f0; color: #475569; }
 
-/* ── SUMULA PREVIEW MODAL ─────────────────────────────────────────── */
 .sumula-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: none; flex-direction: column; gap: 16px; z-index: 10001; color: black; border: 4px solid #0f172a; width: 95%; max-width: 800px; max-height: 95vh; overflow-y: auto; }
 .sumula-modal h3 { margin: 0; font-size: 18px; text-transform: uppercase; color: #1e293b; text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
 .sumula-preview-area { max-height: 60vh; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; }
 .btn-print { background: #16a34a; color: white; }
 .btn-print:hover { background: #15803d; }
 
-/* ── PRINT STYLES ─────────────────────────────────────────────────── */
 @media print {
  body * { visibility: hidden; }
  #print-area, #print-area * { visibility: visible; }
@@ -144,7 +135,6 @@ body::-webkit-scrollbar { display: none; }
 }
 #print-area { display: none; }
 
-/* ── RESPONSIVE ───────────────────────────────────────────────────── */
 @media (max-width: 700px) {
  .panels-grid { flex-direction: column; }
  .panel-red { border-right: none; border-bottom: 2px solid #000; }
@@ -161,60 +151,63 @@ body::-webkit-scrollbar { display: none; }
 <!-- ═══════════════ SETUP SCREEN ═══════════════ -->
 <div id="setup-screen">
  <div class="setup-card">
- <h1>🎯 Placar Bocha</h1>
- <p>Configure a partida antes de iniciar</p>
+ <h1 id="lbl-title">🎯 Placar Bocha</h1>
+ <p id="lbl-subtitle">Configure a partida antes de iniciar</p>
+
+ <div class="lang-bar">
+ <button class="lang-btn active" data-lang="pt">🇧🇷 PT</button>
+ <button class="lang-btn" data-lang="en">🇺🇸 EN</button>
+ <button class="lang-btn" data-lang="es">🇪🇸 ES</button>
+ </div>
 
  <div class="class-section">
- <label>Classe / Modalidade</label>
+ <label id="lbl-class">Classe / Modalidade</label>
  <div class="class-grid" id="class-grid">
- <button class="class-btn" data-class="BC1" data-ends="4" data-time="360" data-balls="6">BC1<small>Individual</small></button>
- <button class="class-btn" data-class="BC2" data-ends="4" data-time="300" data-balls="6">BC2<small>Individual</small></button>
- <button class="class-btn" data-class="BC3" data-ends="4" data-time="360" data-balls="6">BC3<small>c/ RO</small></button>
- <button class="class-btn" data-class="BC4" data-ends="4" data-time="300" data-balls="6">BC4<small>Individual</small></button>
- <button class="class-btn" data-class="Pares BC3" data-ends="4" data-time="360" data-balls="3">Pares BC3<small>Dupla</small></button>
- <button class="class-btn" data-class="Pares BC4" data-ends="4" data-time="300" data-balls="3">Pares BC4<small>Dupla</small></button>
- <button class="class-btn" data-class="Equipe" data-ends="6" data-time="360" data-balls="2">Equipe<small>Trio</small></button>
- <button class="class-btn" data-class="custom" data-ends="4" data-time="300" data-balls="6">⚙️ Custom<small>Personalizar</small></button>
+ <button class="class-btn" data-class="BC1" data-ends="4" data-time="360" data-balls="6">BC1<small data-i18n="individual">Individual</small></button>
+ <button class="class-btn" data-class="BC2" data-ends="4" data-time="300" data-balls="6">BC2<small data-i18n="individual">Individual</small></button>
+ <button class="class-btn" data-class="BC3" data-ends="4" data-time="360" data-balls="6">BC3<small data-i18n="withRO">c/ RO</small></button>
+ <button class="class-btn" data-class="BC4" data-ends="4" data-time="300" data-balls="6">BC4<small data-i18n="individual">Individual</small></button>
+ <button class="class-btn" data-class="Pares BC3" data-ends="4" data-time="360" data-balls="3">Pares BC3<small data-i18n="doubles">Dupla</small></button>
+ <button class="class-btn" data-class="Pares BC4" data-ends="4" data-time="300" data-balls="3">Pares BC4<small data-i18n="doubles">Dupla</small></button>
+ <button class="class-btn" data-class="Equipe" data-ends="6" data-time="360" data-balls="2"><span data-i18n="team">Equipe</span><small data-i18n="trio">Trio</small></button>
+ <button class="class-btn" data-class="custom" data-ends="4" data-time="300" data-balls="6">⚙️ Custom<small data-i18n="customize">Personalizar</small></button>
  </div>
  </div>
 
  <div class="custom-section" id="custom-section">
- <div class="custom-row"><label>Número de Ends</label><input type="number" id="custom-ends" min="1" max="10" value="4"></div>
- <div class="custom-row"><label>Tempo por Parcial (seg)</label><input type="number" id="custom-time" min="60" max="900" value="300" step="30"></div>
- <div class="custom-row"><label>Bolas por Atleta/End</label><input type="number" id="custom-balls" min="1" max="6" value="6"></div>
+ <div class="custom-row"><label id="lbl-ends">Número de Ends</label><input type="number" id="custom-ends" min="1" max="10" value="4"></div>
+ <div class="custom-row"><label id="lbl-time">Tempo por Parcial (seg)</label><input type="number" id="custom-time" min="60" max="900" value="300" step="30"></div>
+ <div class="custom-row"><label id="lbl-balls">Bolas por Atleta/End</label><input type="number" id="custom-balls" min="1" max="6" value="6"></div>
  </div>
 
  <div class="player-setup">
  <div class="player-input red">
- <label>🔴 Vermelho — Atleta</label>
+ <label id="lbl-p1">🔴 Vermelho — Atleta</label>
  <input type="text" id="p1-name" placeholder="Nome do atleta" autocomplete="off">
- <label style="margin-top:6px;">Clube / Equipe</label>
+ <label style="margin-top:6px;" id="lbl-club1">Clube / Equipe</label>
  <input type="text" id="p1-club" placeholder="Clube ou equipe" autocomplete="off">
  </div>
  <div class="player-input blue">
- <label>🔵 Azul — Atleta</label>
+ <label id="lbl-p2">🔵 Azul — Atleta</label>
  <input type="text" id="p2-name" placeholder="Nome do atleta" autocomplete="off">
- <label style="margin-top:6px;">Clube / Equipe</label>
+ <label style="margin-top:6px;" id="lbl-club2">Clube / Equipe</label>
  <input type="text" id="p2-club" placeholder="Clube ou equipe" autocomplete="off">
  </div>
  </div>
- <button class="btn-start" onclick="startGame()">▶ INICIAR PARTIDA</button>
+ <button class="btn-start" id="btn-start" onclick="startGame()">▶ INICIAR PARTIDA</button>
  </div>
 </div>
 
 <!-- ═══════════════ GAME SCREEN ═══════════════ -->
 <div id="game-screen" class="live-container" style="display:none;">
-
- <!-- HEADER -->
  <div class="live-header">
  <button class="btn-hamburger" id="btn-menu">☰</button>
  <div class="header-end-title" id="header-end">END 1</div>
  <div class="header-match-info" id="header-class">BC1</div>
  </div>
 
- <!-- SIDEBAR -->
  <div class="sidebar" id="sidebar">
- <div class="sidebar-header">⚙️ Menu</div>
+ <div class="sidebar-header" id="sb-menu">⚙️ Menu</div>
  <button class="sidebar-btn" id="btn-telao">📺 Telão / Scoreboard</button>
  <button class="sidebar-btn" id="btn-sumula">📄 Ver Súmula</button>
  <button class="sidebar-btn" id="btn-fullscreen">⛶ Tela Cheia</button>
@@ -222,10 +215,7 @@ body::-webkit-scrollbar { display: none; }
  <button class="sidebar-btn" id="btn-reset" style="color:#ef4444;border-top:1px dashed #334155;margin-top:10px;">🔄 Zerar Jogo Completo</button>
  </div>
 
- <!-- PANELS -->
  <div class="panels-grid">
-
- <!-- RED PANEL -->
  <div class="panel panel-red">
  <div class="p-head">
  <div id="p1-name-display">--</div>
@@ -234,7 +224,7 @@ body::-webkit-scrollbar { display: none; }
  <div class="p-body">
  <div class="score-timer-block">
  <div class="score-area">
- <div class="score-label">PONTOS</div>
+ <div class="score-label" id="lbl-points1">PONTOS</div>
  <div style="position:relative;display:flex;align-items:center;justify-content:center;">
  <div id="p1-1p-container" class="penalty-ball-container"></div>
  <div class="score-val" id="p1-end-score">0</div>
@@ -243,7 +233,7 @@ body::-webkit-scrollbar { display: none; }
  </div>
  <div class="timer-row">
  <div class="time-display" id="p1-time-disp">00:00</div>
- <button class="btn-play-icon" id="btn-play-p1" title="Play/Pause Vermelho">▶</button>
+ <button class="btn-play-icon" id="btn-play-p1">▶</button>
  </div>
  </div>
  <div class="balls-wrapper">
@@ -251,12 +241,11 @@ body::-webkit-scrollbar { display: none; }
  <div class="balls-container" id="p1-balls"></div>
  <button class="btn-ball-ctrl" data-side="p1" data-dir="1">+</button>
  </div>
- <button class="btn-viol" data-side="p1">⚠️ Adicionar Violação</button>
+ <button class="btn-viol" data-side="p1" id="btn-viol-p1">⚠️ Adicionar Violação</button>
  <div class="viol-list-main" id="main-p1-viol-list"></div>
  </div>
  </div>
 
- <!-- CENTER OVERLAY -->
  <div class="center-overlay">
  <div class="box-stopped" id="center-stopped">
  <button class="btn-center btn-center-highlight" id="btn-next-end">PRÓXIMO END ▶</button>
@@ -264,7 +253,6 @@ body::-webkit-scrollbar { display: none; }
  </div>
  </div>
 
- <!-- BLUE PANEL -->
  <div class="panel panel-blue">
  <div class="p-head">
  <div id="p2-name-display">--</div>
@@ -273,7 +261,7 @@ body::-webkit-scrollbar { display: none; }
  <div class="p-body">
  <div class="score-timer-block">
  <div class="score-area">
- <div class="score-label">PONTOS</div>
+ <div class="score-label" id="lbl-points2">PONTOS</div>
  <div style="position:relative;display:flex;align-items:center;justify-content:center;">
  <div id="p2-1p-container" class="penalty-ball-container" style="right:auto;left:-80px;"></div>
  <div class="score-val" id="p2-end-score">0</div>
@@ -282,7 +270,7 @@ body::-webkit-scrollbar { display: none; }
  </div>
  <div class="timer-row">
  <div class="time-display" id="p2-time-disp">00:00</div>
- <button class="btn-play-icon" id="btn-play-p2" title="Play/Pause Azul">▶</button>
+ <button class="btn-play-icon" id="btn-play-p2">▶</button>
  </div>
  </div>
  <div class="balls-wrapper">
@@ -290,15 +278,14 @@ body::-webkit-scrollbar { display: none; }
  <div class="balls-container" id="p2-balls"></div>
  <button class="btn-ball-ctrl" data-side="p2" data-dir="1">+</button>
  </div>
- <button class="btn-viol" data-side="p2">⚠️ Adicionar Violação</button>
+ <button class="btn-viol" data-side="p2" id="btn-viol-p2">⚠️ Adicionar Violação</button>
  <div class="viol-list-main" id="main-p2-viol-list"></div>
  </div>
  </div>
+ </div>
+</div>
 
- </div><!-- /panels-grid -->
-</div><!-- /game-screen -->
-
-<!-- ═══════════════ VIOLATION MODAL ═══════════════ -->
+<!-- VIOLATION MODAL -->
 <div class="modal-overlay" id="modal-bg"></div>
 <div class="central-modal" id="viol-modal">
  <h3 id="viol-modal-title">Adicionar Violação</h3>
@@ -309,10 +296,10 @@ body::-webkit-scrollbar { display: none; }
  </div>
 </div>
 
-<!-- ═══════════════ SUMULA MODAL ═══════════════ -->
+<!-- SUMULA MODAL -->
 <div class="modal-overlay" id="sumula-bg" style="z-index:10000;"></div>
 <div class="sumula-modal" id="sumula-modal">
- <h3>📄 Súmula da Partida</h3>
+ <h3 id="lbl-sumula-title">📄 Súmula da Partida</h3>
  <div class="sumula-preview-area" id="sumula-content"></div>
  <div class="modal-btns">
  <button class="btn-secondary" id="btn-sumula-close">Fechar</button>
@@ -320,16 +307,151 @@ body::-webkit-scrollbar { display: none; }
  </div>
 </div>
 
-<!-- PRINT AREA -->
 <div id="print-area"></div>
 
 <script>
 // ══════════════════════════════════════════════════════════════════════
-// PLACAR BOCHA OFFLINE — Réplica fiel do live-scoresheet do SCBP
+// i18n — SISTEMA DE TRADUÇÃO TRILINGUE (PT / EN / ES)
 // ══════════════════════════════════════════════════════════════════════
+let currentLang = 'pt';
 
-// ── VIOLATIONS DICT (cópia fiel do live-scoresheet) ──────────────────
-const VIOLATION_GROUPS = [
+const I18N = {
+ pt: {
+ title: '🎯 Placar Bocha', subtitle: 'Configure a partida antes de iniciar',
+ classLabel: 'Classe / Modalidade', individual: 'Individual', withRO: 'c/ RO',
+ doubles: 'Dupla', team: 'Equipe', trio: 'Trio', customize: 'Personalizar',
+ endsLabel: 'Número de Ends', timeLabel: 'Tempo por Parcial (seg)', ballsLabel: 'Bolas por Atleta/End',
+ p1Label: '🔴 Vermelho — Atleta', p2Label: '🔵 Azul — Atleta',
+ clubLabel: 'Clube / Equipe', namePlaceholder: 'Nome do atleta', clubPlaceholder: 'Clube ou equipe',
+ startBtn: '▶ INICIAR PARTIDA', points: 'PONTOS', addViolation: '⚠️ Adicionar Violação',
+ nextEnd: 'PRÓXIMO END ▶', finishMatch: '✅ ENCERRAR JOGO', finishTB: '✅ ENCERRAR TB',
+ viewSumula: '📄 VER SÚMULA', menuTitle: '⚙️ Menu', telao: '📺 Telão / Scoreboard',
+ sumulaBtn: '📄 Ver Súmula', fullscreen: '⛶ Tela Cheia', close: '✕ FECHAR',
+ reset: '🔄 Zerar Jogo Completo', violTitle: 'Adicionar Violação', violSelect: 'Selecione...',
+ cancel: 'Cancelar', register: 'Registrar', sumulaTitle: '📄 Súmula da Partida',
+ sumulaClose: 'Fechar', printPdf: '🖨️ Imprimir / Salvar PDF',
+ alertClass: 'Selecione uma classe/modalidade.', alertViol: 'Selecione uma violação.',
+ confirmReset: 'Zerar jogo completo e voltar à configuração?',
+ confirmTB: 'Placar empatado em {s1} × {s2}.\n\nDeseja iniciar o Tiebreak?',
+ popupBlocked: 'Pop-up bloqueado. Permita pop-ups para este site.',
+ // Súmula
+ sumulaHeader: 'SÚMULA DE JOGO', vs: 'VERMELHO × AZUL',
+ timeR: 'Tempo (V)', timeB: 'Tempo (A)', pts: 'Pontos', partial: 'PARCIAL',
+ finalScore: 'PLACAR FINAL', violsRed: 'VIOLAÇÕES (VERMELHO):', violsBlue: 'VIOLAÇÕES (AZUL):',
+ noViols: 'Nenhuma violação registrada.', winner: 'VENCEDOR', draw: 'Empate',
+ toDefine: 'A DEFINIR', penBall: 'Bola de Penalização',
+ penPending: 'bola(s) de penalidade pendente(s)',
+ // Classes padrão
+ defaultRed: 'VERMELHO', defaultBlue: 'AZUL'
+ },
+ en: {
+ title: '🎯 Boccia Scoreboard', subtitle: 'Configure the match before starting',
+ classLabel: 'Class / Category', individual: 'Individual', withRO: 'w/ RO',
+ doubles: 'Doubles', team: 'Team', trio: 'Trio', customize: 'Customize',
+ endsLabel: 'Number of Ends', timeLabel: 'Time per End (sec)', ballsLabel: 'Balls per Athlete/End',
+ p1Label: '🔴 Red — Athlete', p2Label: '🔵 Blue — Athlete',
+ clubLabel: 'Club / Team', namePlaceholder: 'Athlete name', clubPlaceholder: 'Club or team',
+ startBtn: '▶ START MATCH', points: 'POINTS', addViolation: '⚠️ Add Violation',
+ nextEnd: 'NEXT END ▶', finishMatch: '✅ FINISH MATCH', finishTB: '✅ FINISH TB',
+ viewSumula: '📄 VIEW SCORESHEET', menuTitle: '⚙️ Menu', telao: '📺 Scoreboard Display',
+ sumulaBtn: '📄 View Scoresheet', fullscreen: '⛶ Fullscreen', close: '✕ CLOSE',
+ reset: '🔄 Reset Complete Game', violTitle: 'Add Violation', violSelect: 'Select...',
+ cancel: 'Cancel', register: 'Register', sumulaTitle: '📄 Match Scoresheet',
+ sumulaClose: 'Close', printPdf: '🖨️ Print / Save PDF',
+ alertClass: 'Select a class/category.', alertViol: 'Select a violation.',
+ confirmReset: 'Reset complete game and return to setup?',
+ confirmTB: 'Score tied at {s1} × {s2}.\n\nStart Tiebreak?',
+ popupBlocked: 'Pop-up blocked. Allow pop-ups for this site.',
+ sumulaHeader: 'MATCH SCORESHEET', vs: 'RED × BLUE',
+ timeR: 'Time (R)', timeB: 'Time (B)', pts: 'Points', partial: 'PARTIAL',
+ finalScore: 'FINAL SCORE', violsRed: 'VIOLATIONS (RED):', violsBlue: 'VIOLATIONS (BLUE):',
+ noViols: 'No violations registered.', winner: 'WINNER', draw: 'Draw',
+ toDefine: 'TBD', penBall: 'Penalty Ball',
+ penPending: 'penalty ball(s) pending',
+ defaultRed: 'RED', defaultBlue: 'BLUE'
+ },
+ es: {
+ title: '🎯 Marcador de Bocha', subtitle: 'Configura el partido antes de comenzar',
+ classLabel: 'Clase / Modalidad', individual: 'Individual', withRO: 'c/ RO',
+ doubles: 'Dobles', team: 'Equipo', trio: 'Trío', customize: 'Personalizar',
+ endsLabel: 'Número de Ends', timeLabel: 'Tiempo por Parcial (seg)', ballsLabel: 'Bolas por Atleta/End',
+ p1Label: '🔴 Rojo — Atleta', p2Label: '🔵 Azul — Atleta',
+ clubLabel: 'Club / Equipo', namePlaceholder: 'Nombre del atleta', clubPlaceholder: 'Club o equipo',
+ startBtn: '▶ INICIAR PARTIDO', points: 'PUNTOS', addViolation: '⚠️ Añadir Violación',
+ nextEnd: 'SIGUIENTE END ▶', finishMatch: '✅ TERMINAR PARTIDO', finishTB: '✅ TERMINAR TB',
+ viewSumula: '📄 VER ACTA', menuTitle: '⚙️ Menú', telao: '📺 Pantalla / Scoreboard',
+ sumulaBtn: '📄 Ver Acta', fullscreen: '⛶ Pantalla Completa', close: '✕ CERRAR',
+ reset: '🔄 Reiniciar Juego Completo', violTitle: 'Añadir Violación', violSelect: 'Seleccionar...',
+ cancel: 'Cancelar', register: 'Registrar', sumulaTitle: '📄 Acta del Partido',
+ sumulaClose: 'Cerrar', printPdf: '🖨️ Imprimir / Guardar PDF',
+ alertClass: 'Selecciona una clase/modalidad.', alertViol: 'Selecciona una violación.',
+ confirmReset: '¿Reiniciar juego completo y volver a la configuración?',
+ confirmTB: 'Marcador empatado en {s1} × {s2}.\n\n¿Iniciar Tiebreak?',
+ popupBlocked: 'Pop-up bloqueado. Permite pop-ups para este sitio.',
+ sumulaHeader: 'ACTA DE JUEGO', vs: 'ROJO × AZUL',
+ timeR: 'Tiempo (R)', timeB: 'Tiempo (A)', pts: 'Puntos', partial: 'PARCIAL',
+ finalScore: 'PUNTUACIÓN FINAL', violsRed: 'VIOLACIONES (ROJO):', violsBlue: 'VIOLACIONES (AZUL):',
+ noViols: 'Ninguna violación registrada.', winner: 'GANADOR', draw: 'Empate',
+ toDefine: 'POR DEFINIR', penBall: 'Bola de Penalización',
+ penPending: 'bola(s) de penalización pendiente(s)',
+ defaultRed: 'ROJO', defaultBlue: 'AZUL'
+ }
+};
+
+function t(key) { return (I18N[currentLang] && I18N[currentLang][key]) || (I18N.pt[key]) || key; }
+
+function applyLang(lang) {
+ currentLang = lang;
+ document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+ // Setup screen
+ document.getElementById('lbl-title').textContent = t('title');
+ document.getElementById('lbl-subtitle').textContent = t('subtitle');
+ document.getElementById('lbl-class').textContent = t('classLabel');
+ document.getElementById('lbl-ends').textContent = t('endsLabel');
+ document.getElementById('lbl-time').textContent = t('timeLabel');
+ document.getElementById('lbl-balls').textContent = t('ballsLabel');
+ document.getElementById('lbl-p1').textContent = t('p1Label');
+ document.getElementById('lbl-p2').textContent = t('p2Label');
+ document.getElementById('lbl-club1').textContent = t('clubLabel');
+ document.getElementById('lbl-club2').textContent = t('clubLabel');
+ document.getElementById('p1-name').placeholder = t('namePlaceholder');
+ document.getElementById('p2-name').placeholder = t('namePlaceholder');
+ document.getElementById('p1-club').placeholder = t('clubPlaceholder');
+ document.getElementById('p2-club').placeholder = t('clubPlaceholder');
+ document.getElementById('btn-start').textContent = t('startBtn');
+ // Class buttons small text
+ document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+ // Game screen labels
+ document.getElementById('lbl-points1').textContent = t('points');
+ document.getElementById('lbl-points2').textContent = t('points');
+ document.getElementById('btn-viol-p1').textContent = t('addViolation');
+ document.getElementById('btn-viol-p2').textContent = t('addViolation');
+ // Sidebar
+ document.getElementById('sb-menu').textContent = t('menuTitle');
+ document.getElementById('btn-telao').textContent = t('telao');
+ document.getElementById('btn-sumula').textContent = t('sumulaBtn');
+ document.getElementById('btn-fullscreen').textContent = t('fullscreen');
+ document.getElementById('btn-menu-close').textContent = t('close');
+ document.getElementById('btn-reset').innerHTML = '🔄 ' + t('reset');
+ // Modals
+ document.getElementById('btn-viol-cancel').textContent = t('cancel');
+ document.getElementById('btn-viol-confirm').textContent = t('register');
+ document.getElementById('lbl-sumula-title').textContent = t('sumulaTitle');
+ document.getElementById('btn-sumula-close').textContent = t('sumulaClose');
+ document.getElementById('btn-sumula-print').textContent = t('printPdf');
+ // Re-render if game active
+ if (state) updateCounters();
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+ btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// VIOLATIONS DICT — TRILINGUE
+// ══════════════════════════════════════════════════════════════════════
+const VIOL_GROUPS = {
+ pt: [
  { group: 'Retração (Art. 16.5)', penalty: 'Retração', rules: [
  { code: '16.5.1', text: 'Lançar antes da autorização do árbitro.' },
  { code: '16.5.2', text: 'Atleta BC3 não liberar a bola diretamente.' },
@@ -385,9 +507,128 @@ const VIOLATION_GROUPS = [
  { code: '16.12.3', text: 'Atleta/RO abandonar a quadra sem permissão.' },
  { code: '16.12.4', text: 'Ter menos de 3 bolas aprovadas no pré-jogo.' }
  ]}
-];
+ ],
+ en: [
+ { group: 'Retraction (Art. 16.5)', penalty: 'Retraction', rules: [
+ { code: '16.5.1', text: 'Throw before referee authorization.' },
+ { code: '16.5.2', text: 'BC3 athlete not releasing ball directly.' },
+ { code: '16.5.3', text: 'SA/RO touching athlete/equipment during throw.' },
+ { code: '16.5.4', text: 'Simultaneous throw (Athlete and RO).' },
+ { code: '16.5.5', text: 'Play colored ball before Jack (White).' },
+ { code: '16.5.6', text: 'First colored ball thrown by wrong athlete.' },
+ { code: '16.5.7', text: 'BC3 athlete not performing two-way swing.' },
+ { code: '16.5.8', text: 'BC3 not reorienting ramp when returning to court.' },
+ { code: '16.5.9', text: 'Throwing more than one ball at a time.' }
+ ]},
+ { group: 'Penalty Ball (Art. 16.6)', penalty: 'Penalty Ball', rules: [
+ { code: '16.6.1', text: 'Invade playing area out of turn.' },
+ { code: '16.6.2', text: 'RO looking at court before end of partial.' },
+ { code: '16.6.3', text: 'Preparing play during opponent\'s time.' },
+ { code: '16.6.4', text: 'SA/RO moving equipment/ball without athlete\'s request.' },
+ { code: '16.6.5', text: 'Not moving out of the way after 1st verbal warning.' },
+ { code: '16.6.6', text: 'Accidentally touching a ball in court.' },
+ { code: '16.6.7', text: 'Unreasonably delaying the match.' },
+ { code: '16.6.8', text: 'Not accepting referee\'s decision.' },
+ { code: '16.6.9', text: 'SA, RO or Coach invading court without permission.' },
+ { code: '16.6.10', text: 'Lack of cooperation during warm-up.' }
+ ]},
+ { group: 'Retraction + Penalty (Art. 16.7)', penalty: 'Retraction + Penalty', rules: [
+ { code: '16.7.1', text: 'Touching line or outside box during throw.' },
+ { code: '16.7.2', text: 'Ramp exceeding throwing line.' },
+ { code: '16.7.3', text: 'Throwing without gluteus/abdomen contact with seat.' },
+ { code: '16.7.4', text: 'Ball touching outside box during throw.' },
+ { code: '16.7.5', text: 'Throwing ball while RO is looking at court.' },
+ { code: '16.7.6', text: 'Seat height exceeding 66 cm (BC1, BC2, BC4).' },
+ { code: '16.7.7', text: 'Throwing while teammate is returning to playing area.' },
+ { code: '16.7.8', text: 'Preparing and throwing ball in opponent\'s turn.' }
+ ]},
+ { group: 'Penalty + Yellow (Art. 16.8)', penalty: 'Penalty + Yellow', rules: [
+ { code: '16.8.1', text: 'Distracting or interfering in opponent\'s action.' },
+ { code: '16.8.2', text: 'Inadequate communication between team in court.' }
+ ]},
+ { group: 'Yellow Card (Art. 16.9)', penalty: 'Yellow Card', rules: [
+ { code: '16.9.1', text: 'Invasion or excess of people in Warm-up/Call Room.' },
+ { code: '16.9.2', text: 'Excess of balls taken to Call Room.' },
+ { code: '16.9.3', text: 'Failure in pre-game ball check.' },
+ { code: '16.9.4', text: 'Leaving court without referee\'s permission.' },
+ { code: '16.9.5', text: 'Using non-approved equipment.' }
+ ]},
+ { group: 'Red Card (Art. 16.11)', penalty: 'Red Card', rules: [
+ { code: '16.11.1', text: 'Unsportsmanlike conduct.' },
+ { code: '16.11.2', text: 'Violent conduct.' },
+ { code: '16.11.3', text: 'Use of abusive language or gestures.' }
+ ]},
+ { group: 'Forfeit (Art. 16.12)', penalty: 'Forfeit', rules: [
+ { code: '16.12.1', text: 'Breaking opponent\'s equipment preventing play.' },
+ { code: '16.12.2', text: 'Failure in post-game ball check.' },
+ { code: '16.12.3', text: 'Athlete/RO abandoning court without permission.' },
+ { code: '16.12.4', text: 'Having fewer than 3 approved balls in pre-game.' }
+ ]}
+ ],
+ es: [
+ { group: 'Retracción (Art. 16.5)', penalty: 'Retracción', rules: [
+ { code: '16.5.1', text: 'Lanzar antes de la señal del árbitro.' },
+ { code: '16.5.2', text: 'Atleta BC3 no libera la bola directamente.' },
+ { code: '16.5.3', text: 'Asistente toca al atleta/equipo durante el lanzamiento.' },
+ { code: '16.5.4', text: 'Lanzamiento simultáneo (Atleta y Asistente).' },
+ { code: '16.5.5', text: 'Jugar bola de color antes de la Bola Blanca.' },
+ { code: '16.5.6', text: 'Primera bola de color jugada por atleta incorrecto.' },
+ { code: '16.5.7', text: 'Atleta BC3 no realiza el balanceo a ambos lados.' },
+ { code: '16.5.8', text: 'BC3 no reorienta la canaleta al volver al campo.' },
+ { code: '16.5.9', text: 'Jugar más de una bola al mismo tiempo.' }
+ ]},
+ { group: 'Bola de Penalización (Art. 16.6)', penalty: 'Bola de Penalización', rules: [
+ { code: '16.6.1', text: 'Invadir el área de juego fuera de turno.' },
+ { code: '16.6.2', text: 'Asistente mira al campo antes del fin del parcial.' },
+ { code: '16.6.3', text: 'Preparar jugada en el tiempo del adversario.' },
+ { code: '16.6.4', text: 'Asistente mueve equipo/bola sin pedido del atleta.' },
+ { code: '16.6.5', text: 'No salir del camino tras la 1ª advertencia verbal.' },
+ { code: '16.6.6', text: 'Tocar accidentalmente una bola en el campo.' },
+ { code: '16.6.7', text: 'Retrasar el partido de forma no razonable.' },
+ { code: '16.6.8', text: 'No aceptar la decisión del árbitro.' },
+ { code: '16.6.9', text: 'Asistente o Entrenador invaden el campo sin permiso.' },
+ { code: '16.6.10', text: 'Falta de cooperación durante el calentamiento.' }
+ ]},
+ { group: 'Retracción + Penalización (Art. 16.7)', penalty: 'Retracción + Penalización', rules: [
+ { code: '16.7.1', text: 'Tocar la línea o fuera del box durante el lanzamiento.' },
+ { code: '16.7.2', text: 'Canaleta ultrapassando la línea de lanzamiento.' },
+ { code: '16.7.3', text: 'Lanzar sin contacto del glúteo/abdomen con el asiento.' },
+ { code: '16.7.4', text: 'Bola toca fuera del box durante el lanzamiento.' },
+ { code: '16.7.5', text: 'Lanzar la bola mientras el Asistente mira al campo.' },
+ { code: '16.7.6', text: 'Altura del asiento superior a 66 cm (BC1, BC2, BC4).' },
+ { code: '16.7.7', text: 'Lanzar mientras un compañero vuelve al área de juego.' },
+ { code: '16.7.8', text: 'Preparar y lanzar la bola en el turno del adversario.' }
+ ]},
+ { group: 'Penalización + Amarilla (Art. 16.8)', penalty: 'Penalización + Amarilla', rules: [
+ { code: '16.8.1', text: 'Distraer o interferir en la acción del adversario.' },
+ { code: '16.8.2', text: 'Comunicación inadecuada entre el equipo en el campo.' }
+ ]},
+ { group: 'Tarjeta Amarilla (Art. 16.9)', penalty: 'Tarjeta Amarilla', rules: [
+ { code: '16.9.1', text: 'Invasión o exceso de personas en el Calentamiento/Sala de Llamada.' },
+ { code: '16.9.2', text: 'Exceso de bolas llevadas a la Sala de Llamada.' },
+ { code: '16.9.3', text: 'Fallo en la comprobación de bolas pre-juego.' },
+ { code: '16.9.4', text: 'Salir del campo sin permiso del árbitro.' },
+ { code: '16.9.5', text: 'Uso de equipo no aprobado.' }
+ ]},
+ { group: 'Tarjeta Roja (Art. 16.11)', penalty: 'Tarjeta Roja', rules: [
+ { code: '16.11.1', text: 'Conducta antideportiva.' },
+ { code: '16.11.2', text: 'Conducta violenta.' },
+ { code: '16.11.3', text: 'Uso de lenguaje o gestos abusivos.' }
+ ]},
+ { group: 'Forfeit (Art. 16.12)', penalty: 'Forfeit', rules: [
+ { code: '16.12.1', text: 'Romper el equipo del adversario impidiendo el juego.' },
+ { code: '16.12.2', text: 'Fallo en la comprobación de bolas post-juego.' },
+ { code: '16.12.3', text: 'Atleta/Asistente abandona el campo sin permiso.' },
+ { code: '16.12.4', text: 'Tener menos de 3 bolas aprobadas en el pre-juego.' }
+ ]}
+ ]
+};
 
-// ── STATE ────────────────────────────────────────────────────────────
+function getViolGroups() { return VIOL_GROUPS[currentLang] || VIOL_GROUPS.pt; }
+
+// ══════════════════════════════════════════════════════════════════════
+// STATE & LOGIC
+// ══════════════════════════════════════════════════════════════════════
 let state = null;
 let timerInterval = null;
 let activeViolSide = null;
@@ -397,29 +638,17 @@ function defaultState() {
  return {
  p1: { name: '', club: '', score: 0, tbScore: null, seconds: 300, ballsUsed: 0, violations: [], penalties: [] },
  p2: { name: '', club: '', score: 0, tbScore: null, seconds: 300, ballsUsed: 0, violations: [], penalties: [] },
- currentEnd: 1,
- maxEnds: 4,
- ballsPerEnd: 6,
- timerPerEnd: 300,
- classCode: 'BC1',
- partials: [],
- activeTimer: null,
- startedAt: new Date().toISOString(),
- finished: false
+ currentEnd: 1, maxEnds: 4, ballsPerEnd: 6, timerPerEnd: 300, classCode: 'BC1',
+ partials: [], activeTimer: null, startedAt: new Date().toISOString(), finished: false
  };
 }
 
-// ── PERSISTENCE ──────────────────────────────────────────────────────
-function saveState() {
- if (!state) return;
- try { localStorage.setItem('placar_bocha_state', JSON.stringify(state)); } catch(_) {}
-}
+function saveState() { if (!state) return; try { localStorage.setItem('placar_bocha_state', JSON.stringify(state)); } catch(_) {} }
 function loadState() {
  try {
  const r = localStorage.getItem('placar_bocha_state');
  if (r) {
  state = JSON.parse(r);
- // Fix NaN: garantir que campos numéricos existam (state antigo pode não ter)
  if (typeof state.p1.seconds !== 'number' || isNaN(state.p1.seconds)) state.p1.seconds = state.timerPerEnd || 300;
  if (typeof state.p2.seconds !== 'number' || isNaN(state.p2.seconds)) state.p2.seconds = state.timerPerEnd || 300;
  if (typeof state.timerPerEnd !== 'number' || isNaN(state.timerPerEnd)) state.timerPerEnd = 300;
@@ -436,7 +665,6 @@ function loadState() {
  return false;
 }
 
-// ── CLASS SELECTION ──────────────────────────────────────────────────
 document.querySelectorAll('.class-btn').forEach(btn => {
  btn.addEventListener('click', () => {
  document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('selected'));
@@ -446,16 +674,13 @@ document.querySelectorAll('.class-btn').forEach(btn => {
  });
 });
 
-// ── START GAME ───────────────────────────────────────────────────────
 function startGame() {
- if (!selectedClass) { alert('Selecione uma classe/modalidade.'); return; }
+ if (!selectedClass) { alert(t('alertClass')); return; }
  const p1n = document.getElementById('p1-name').value.trim();
  const p2n = document.getElementById('p2-name').value.trim();
-
  state = defaultState();
- state.p1.name = p1n || 'VERMELHO'; state.p1.club = document.getElementById('p1-club').value.trim();
- state.p2.name = p2n || 'AZUL'; state.p2.club = document.getElementById('p2-club').value.trim();
-
+ state.p1.name = p1n || t('defaultRed'); state.p1.club = document.getElementById('p1-club').value.trim();
+ state.p2.name = p2n || t('defaultBlue'); state.p2.club = document.getElementById('p2-club').value.trim();
  if (selectedClass.code === 'custom') {
  state.maxEnds = +document.getElementById('custom-ends').value || 4;
  state.timerPerEnd = +document.getElementById('custom-time').value || 300;
@@ -466,19 +691,15 @@ function startGame() {
  state.ballsPerEnd = selectedClass.balls; state.classCode = selectedClass.code;
  }
  state.p1.seconds = state.timerPerEnd; state.p2.seconds = state.timerPerEnd;
-
  document.getElementById('setup-screen').style.display = 'none';
  document.getElementById('game-screen').style.display = 'flex';
  document.getElementById('header-class').textContent = state.classCode;
- renderAll();
- saveState();
+ renderAll(); saveState();
 }
 
-// ── TIMER (cópia fiel da lógica do live-scoresheet) ──────────────────
 function toggleTimer(side) {
- if (state.activeTimer === side || side === 'stop') {
- state.activeTimer = null; clearInterval(timerInterval);
- } else {
+ if (state.activeTimer === side || side === 'stop') { state.activeTimer = null; clearInterval(timerInterval); }
+ else {
  state.activeTimer = side; clearInterval(timerInterval);
  timerInterval = setInterval(() => {
  if (state.activeTimer === 'p1' && state.p1.seconds > 0) { state.p1.seconds--; updateCounters(); }
@@ -489,42 +710,32 @@ function toggleTimer(side) {
  updateCounters();
 }
 
-// ── SCORE ────────────────────────────────────────────────────────────
 function adjustScore(side, delta) {
  if (!state || state.finished) return;
  const inTB = state.p1.tbScore !== null;
- if (inTB) {
- if (state[side].tbScore === null) state[side].tbScore = 0;
- state[side].tbScore = Math.max(0, state[side].tbScore + delta);
- } else {
- state[side].score = Math.max(0, state[side].score + delta);
- }
+ if (inTB) { if (state[side].tbScore === null) state[side].tbScore = 0; state[side].tbScore = Math.max(0, state[side].tbScore + delta); }
+ else { state[side].score = Math.max(0, state[side].score + delta); }
  updateCounters(); saveState();
 }
 
-// ── BALLS ────────────────────────────────────────────────────────────
 function adjustBalls(side, delta) {
  if (!state || state.finished) return;
  state[side].ballsUsed = Math.max(0, Math.min(state.ballsPerEnd, state[side].ballsUsed + delta));
  updateCounters(); saveState();
 }
 
-// ── NEXT END ─────────────────────────────────────────────────────────
 function nextEnd() {
  if (!state || state.finished) return;
  const inTB = state.p1.tbScore !== null;
-
  if (inTB) {
  state.partials.push({ s1: state.p1.tbScore, s2: state.p2.tbScore, t1: fmtTime(state.timerPerEnd - state.p1.seconds), t2: fmtTime(state.timerPerEnd - state.p2.seconds), isTB: true });
  state.finished = true; clearInterval(timerInterval); state.activeTimer = null;
  updateCounters(); saveState(); showSumulaPreview(); return;
  }
-
  state.partials.push({ s1: state.p1.score, s2: state.p2.score, t1: fmtTime(state.timerPerEnd - state.p1.seconds), t2: fmtTime(state.timerPerEnd - state.p2.seconds), isTB: false });
-
  if (state.currentEnd >= state.maxEnds) {
  if (state.p1.score === state.p2.score) {
- if (confirm(`Placar empatado em ${state.p1.score} × ${state.p2.score}.\n\nDeseja iniciar o Tiebreak?`)) {
+ if (confirm(t('confirmTB').replace('{s1}', state.p1.score).replace('{s2}', state.p2.score))) {
  state.p1.tbScore = 0; state.p2.tbScore = 0;
  state.p1.seconds = state.timerPerEnd; state.p2.seconds = state.timerPerEnd;
  state.p1.ballsUsed = 0; state.p2.ballsUsed = 0;
@@ -534,7 +745,6 @@ function nextEnd() {
  state.finished = true; clearInterval(timerInterval); state.activeTimer = null;
  updateCounters(); saveState(); showSumulaPreview(); return;
  }
-
  state.currentEnd++;
  state.p1.seconds = state.timerPerEnd; state.p2.seconds = state.timerPerEnd;
  state.p1.ballsUsed = 0; state.p2.ballsUsed = 0;
@@ -542,15 +752,14 @@ function nextEnd() {
  updateCounters(); saveState();
 }
 
-// ── VIOLATIONS ───────────────────────────────────────────────────────
 function openViolationModal(side) {
  if (!state || state.finished) return;
  activeViolSide = side;
  const label = side === 'p1' ? '🔴 ' + state.p1.name : '🔵 ' + state.p2.name;
- document.getElementById('viol-modal-title').textContent = 'Violação — ' + label;
+ document.getElementById('viol-modal-title').textContent = t('violTitle') + ' — ' + label;
  const sel = document.getElementById('viol-select');
- sel.innerHTML = '<option value="">Selecione a violação...</option>';
- VIOLATION_GROUPS.forEach(g => {
+ sel.innerHTML = '<option value="">' + t('violSelect') + '</option>';
+ getViolGroups().forEach(g => {
  const og = document.createElement('optgroup'); og.label = g.group;
  g.rules.forEach(r => { const o = document.createElement('option'); o.value = `${r.code}|${r.text}|${g.penalty}`; o.textContent = `${r.code} — ${r.text}`; og.appendChild(o); });
  sel.appendChild(og);
@@ -567,80 +776,46 @@ function closeViolationModal() {
 
 function confirmViolation() {
  const val = document.getElementById('viol-select').value;
- if (!val) { alert('Selecione uma violação.'); return; }
+ if (!val) { alert(t('alertViol')); return; }
  const [code, text, penalty] = val.split('|');
- const timeStr = new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
- const violStr = `P${state.currentEnd} - ${code} - ${text} - ${penalty} | ${timeStr}`;
- state[activeViolSide].violations.push(violStr);
-
- if (penalty.includes('Penalidade')) {
+ const timeStr = new Date().toLocaleTimeString(currentLang === 'en' ? 'en-US' : currentLang === 'es' ? 'es-ES' : 'pt-BR', { hour:'2-digit', minute:'2-digit' });
+ state[activeViolSide].violations.push(`P${state.currentEnd} - ${code} - ${text} - ${penalty} | ${timeStr}`);
+ if (/penaliza|penalty|penalizaci/i.test(penalty)) {
  const opp = activeViolSide === 'p1' ? 'p2' : 'p1';
  state[opp].penalties.push(false);
  }
-
  closeViolationModal(); updateCounters(); saveState();
 }
 
-function deleteViolation(side, idx) {
- if (!state) return;
- state[side].violations.splice(idx, 1);
- updateCounters(); saveState();
-}
+function deleteViolation(side, idx) { if (!state) return; state[side].violations.splice(idx, 1); updateCounters(); saveState(); }
 
-// ── FORMAT TIME ──────────────────────────────────────────────────────
-function fmtTime(sec) {
- const m = Math.floor(sec / 60); const s = sec % 60;
- return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-}
+function fmtTime(sec) { const m = Math.floor(sec / 60); const s = sec % 60; return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0'); }
 
-// ── RENDER (cópia fiel da estrutura do live-scoresheet) ──────────────
 function updateCounters() {
  if (!state) return;
-
- // Names
  document.getElementById('p1-name-display').textContent = state.p1.name || '--';
- document.getElementById('p1-club-display').textContent = state.p1.club || '--';
+ document.getElementById('p1-club-display').textContent = state.p1.club || '';
  document.getElementById('p2-name-display').textContent = state.p2.name || '--';
- document.getElementById('p2-club-display').textContent = state.p2.club || '--';
-
- // Scores
+ document.getElementById('p2-club-display').textContent = state.p2.club || '';
  document.getElementById('p1-end-score').textContent = state.p1.score;
  document.getElementById('p2-end-score').textContent = state.p2.score;
-
- // TB
  const inTB = state.p1.tbScore !== null;
- const tb1 = document.getElementById('p1-tb-score');
- const tb2 = document.getElementById('p2-tb-score');
+ const tb1 = document.getElementById('p1-tb-score'), tb2 = document.getElementById('p2-tb-score');
  if (inTB) { tb1.style.display = 'block'; tb1.textContent = 'TB:' + state.p1.tbScore; tb2.style.display = 'block'; tb2.textContent = 'TB:' + state.p2.tbScore; }
  else { tb1.style.display = 'none'; tb2.style.display = 'none'; }
-
- // Timers
  document.getElementById('p1-time-disp').textContent = fmtTime(state.p1.seconds);
  document.getElementById('p2-time-disp').textContent = fmtTime(state.p2.seconds);
-
- // Play buttons
  document.getElementById('btn-play-p1').textContent = state.activeTimer === 'p1' ? '⏸' : '▶';
  document.getElementById('btn-play-p2').textContent = state.activeTimer === 'p2' ? '⏸' : '▶';
-
- // Header
  document.getElementById('header-end').textContent = inTB ? 'TIEBREAK' : `END ${state.currentEnd}`;
-
- // Balls
  renderBalls('p1'); renderBalls('p2');
-
- // Violations
  renderViolList('p1'); renderViolList('p2');
-
- // Penalty chips
  renderPenaltyChips('p1'); renderPenaltyChips('p2');
-
- // End buttons
- const btnNext = document.getElementById('btn-next-end');
- const btnFinish = document.getElementById('btn-finish-match');
- if (state.finished) { btnNext.style.display = 'none'; btnFinish.style.display = 'block'; btnFinish.textContent = '📄 VER SÚMULA'; btnFinish.onclick = showSumulaPreview; }
- else if (inTB) { btnNext.textContent = '✅ ENCERRAR TB'; btnNext.style.display = 'block'; btnFinish.style.display = 'none'; }
- else if (state.currentEnd >= state.maxEnds) { btnNext.textContent = '✅ ENCERRAR JOGO'; btnNext.style.display = 'block'; btnFinish.style.display = 'none'; }
- else { btnNext.textContent = `PRÓXIMO END (${state.currentEnd + 1}) ▶`; btnNext.style.display = 'block'; btnFinish.style.display = 'none'; }
+ const btnNext = document.getElementById('btn-next-end'), btnFinish = document.getElementById('btn-finish-match');
+ if (state.finished) { btnNext.style.display = 'none'; btnFinish.style.display = 'block'; btnFinish.textContent = t('viewSumula'); btnFinish.onclick = showSumulaPreview; }
+ else if (inTB) { btnNext.textContent = t('finishTB'); btnNext.style.display = 'block'; btnFinish.style.display = 'none'; }
+ else if (state.currentEnd >= state.maxEnds) { btnNext.textContent = t('finishMatch'); btnNext.style.display = 'block'; btnFinish.style.display = 'none'; }
+ else { btnNext.textContent = `${t('nextEnd').replace(' ▶','')} (${state.currentEnd + 1}) ▶`; btnNext.style.display = 'block'; btnFinish.style.display = 'none'; }
 }
 
 function renderBalls(side) {
@@ -658,13 +833,10 @@ function renderViolList(side) {
  const el = document.getElementById(`main-${side}-viol-list`); el.innerHTML = '';
  (state[side].violations || []).forEach((v, i) => {
  const d = document.createElement('div'); d.className = 'viol-item';
- const parts = v.split(' | ');
- d.innerHTML = `<span>⚠️ ${esc(parts[0])}</span><button class="main-del-viol" data-side="${side}" data-idx="${i}">&times;</button>`;
+ d.innerHTML = `<span>⚠️ ${esc(v.split(' | ')[0])}</span><button class="main-del-viol" data-side="${side}" data-idx="${i}">&times;</button>`;
  el.appendChild(d);
  });
- el.querySelectorAll('.main-del-viol').forEach(btn => {
- btn.onclick = () => deleteViolation(btn.dataset.side, +btn.dataset.idx);
- });
+ el.querySelectorAll('.main-del-viol').forEach(btn => { btn.onclick = () => deleteViolation(btn.dataset.side, +btn.dataset.idx); });
 }
 
 function renderPenaltyChips(side) {
@@ -675,7 +847,7 @@ function renderPenaltyChips(side) {
  if (pending > 0) {
  const chip = document.createElement('button'); chip.className = 'chip-1p pend';
  chip.textContent = `${pending} 1P`;
- chip.title = `${pending} bola(s) de penalidade pendente(s)`;
+ chip.title = `${pending} ${t('penPending')}`;
  chip.onclick = () => { const idx = pens.lastIndexOf(false); if (idx >= 0) { pens[idx] = true; updateCounters(); saveState(); } };
  c.appendChild(chip);
  } else {
@@ -685,49 +857,37 @@ function renderPenaltyChips(side) {
 }
 
 function renderAll() { updateCounters(); }
-
-// ── ESCAPE HTML ──────────────────────────────────────────────────────
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// ── SUMULA (template OFICIAL do SCBP — cópia fiel) ───────────────────
+// ── SUMULA TRILINGUE ─────────────────────────────────────────────────
 function buildSumulaHTML() {
- const date = new Date(state.startedAt).toLocaleDateString('pt-BR');
- const time = new Date(state.startedAt).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+ const loc = currentLang === 'en' ? 'en-US' : currentLang === 'es' ? 'es-ES' : 'pt-BR';
+ const date = new Date(state.startedAt).toLocaleDateString(loc);
+ const time = new Date(state.startedAt).toLocaleTimeString(loc, { hour:'2-digit', minute:'2-digit' });
  const s1 = state.p1.score, s2 = state.p2.score;
-
- // Winner calc (cópia da lógica do sumula-template.js)
  let winnerName = '';
  if (state.finished) {
  if (state.p1.tbScore !== null && state.p1.tbScore > state.p2.tbScore) winnerName = state.p1.name + ' (Tiebreak)';
  else if (state.p2.tbScore !== null && state.p2.tbScore > state.p1.tbScore) winnerName = state.p2.name + ' (Tiebreak)';
  else if (s1 > s2) winnerName = state.p1.name;
  else if (s2 > s1) winnerName = state.p2.name;
- else winnerName = 'Empate';
+ else winnerName = t('draw');
  }
-
- // Violations lines (cópia fiel do _violationsLines)
  function violsLines(viols) {
  let nPen = 0; const out = [];
- (viols || []).forEach(v => {
- if (/penaliza/i.test(v)) nPen++;
- else out.push('• ' + esc(v.split(' | ')[0]));
- });
- if (nPen > 0) out.push(`<b>${nPen} × 1 Bola de Penalização</b> <span style="color:#64748b;">(1P)</span>`);
- return out.length ? out.join('<br>') : 'Nenhuma violação registrada.';
+ (viols || []).forEach(v => { if (/penaliza|penalty|penalizaci/i.test(v)) nPen++; else out.push('• ' + esc(v.split(' | ')[0])); });
+ if (nPen > 0) out.push(`<b>${nPen} × 1 ${t('penBall')}</b> <span style="color:#64748b;">(1P)</span>`);
+ return out.length ? out.join('<br>') : t('noViols');
  }
-
- // Partials rows (cópia fiel do loop do sumula-template.js)
- let partialsRows = '';
- let tbRendered = 0;
+ let partialsRows = ''; let tbRendered = 0;
  const total = Math.max(state.maxEnds + 2, state.partials.length);
  for (let i = 0; i < total; i++) {
- const p = state.partials[i];
- const isTB = i >= state.maxEnds;
+ const p = state.partials[i]; const isTB = i >= state.maxEnds;
  if (isTB && !p) continue;
  const label = isTB ? (tbRendered === 0 ? 'TB 1' : 'TB 2') : `P${i+1}`;
  if (isTB) tbRendered++;
- const ps1 = p ? p.s1 : '-'; const ps2 = p ? p.s2 : '-';
- const pt1 = p ? (p.t1 || '') : ''; const pt2 = p ? (p.t2 || '') : '';
+ const ps1 = p ? p.s1 : '-', ps2 = p ? p.s2 : '-';
+ const pt1 = p ? (p.t1 || '') : '', pt2 = p ? (p.t2 || '') : '';
  partialsRows += `<tr>
  <td style="border:1px solid #000;padding:10px;font-size:18px;font-weight:bold;color:#000;">${esc(pt1)}</td>
  <td style="border:1px solid #000;padding:10px;font-weight:bold;font-size:24px;color:#dc2626;">${ps1}</td>
@@ -736,60 +896,43 @@ function buildSumulaHTML() {
  <td style="border:1px solid #000;padding:10px;font-size:18px;font-weight:bold;color:#000;">${esc(pt2)}</td>
  </tr>`;
  }
-
- const winnerHtml = (state.finished && winnerName && winnerName !== 'Empate')
- ? `<div style="margin-top:18px;text-align:center;text-transform:uppercase;font-weight:bold;font-size:20px;color:#000;border:3px solid #000;border-radius:8px;padding:14px;background:#f1f5f9;letter-spacing:0.5px;">VENCEDOR: ${esc(winnerName)}${state.p1.club || state.p2.club ? '' : ''}</div>`
- : '';
-
+ const winnerHtml = (state.finished && winnerName && winnerName !== t('draw'))
+ ? `<div style="margin-top:18px;text-align:center;text-transform:uppercase;font-weight:bold;font-size:20px;color:#000;border:3px solid #000;border-radius:8px;padding:14px;background:#f1f5f9;letter-spacing:0.5px;">${t('winner')}: ${esc(winnerName)}</div>` : '';
  return `<div style="font-family:sans-serif;background:white;border-radius:8px;color:#000;padding:20px;">
- <h4 style="text-align:center;text-transform:uppercase;margin-top:0;color:#000;margin-bottom:10px;font-size:22px;">SÚMULA DE JOGO - ${esc(state.classCode)}</h4>
+ <h4 style="text-align:center;text-transform:uppercase;margin-top:0;color:#000;margin-bottom:10px;font-size:22px;">${t('sumulaHeader')} - ${esc(state.classCode)}</h4>
  <div style="text-align:center;font-size:13px;color:#64748b;margin-bottom:15px;">${esc(date)} — ${esc(time)}</div>
-
  <table style="width:100%;border-collapse:collapse;margin-bottom:20px;text-align:center;border:2px solid #000;">
- <thead>
- <tr>
+ <thead><tr>
  <th colspan="2" style="border:1px solid #000;padding:10px;background:#dc2626;color:#fff;text-align:center;vertical-align:middle;line-height:1.35;">
- <div style="font-size:18px;font-weight:900;">${esc(state.p1.name || 'A DEFINIR')}</div>
+ <div style="font-size:18px;font-weight:900;">${esc(state.p1.name || t('toDefine'))}</div>
  ${state.p1.club ? `<div style="font-size:13px;font-weight:600;opacity:.95;">${esc(state.p1.club)}</div>` : ''}
  </th>
- <th style="border:1px solid #000;padding:10px;background:#0f172a;color:#fff;text-align:center;vertical-align:middle;font-size:14px;font-weight:800;">VERMELHO&nbsp;×&nbsp;AZUL</th>
+ <th style="border:1px solid #000;padding:10px;background:#0f172a;color:#fff;text-align:center;vertical-align:middle;font-size:14px;font-weight:800;">${t('vs').replace(/×/g,'&nbsp;×&nbsp;')}</th>
  <th colspan="2" style="border:1px solid #000;padding:10px;background:#2563eb;color:#fff;text-align:center;vertical-align:middle;line-height:1.35;">
- <div style="font-size:18px;font-weight:900;">${esc(state.p2.name || 'A DEFINIR')}</div>
+ <div style="font-size:18px;font-weight:900;">${esc(state.p2.name || t('toDefine'))}</div>
  ${state.p2.club ? `<div style="font-size:13px;font-weight:600;opacity:.95;">${esc(state.p2.club)}</div>` : ''}
- </th>
- </tr>
+ </th></tr>
  <tr style="background:#f1f5f9;border-bottom:2px solid #000;">
- <th style="border:1px solid #000;padding:12px;width:20%;color:#dc2626;font-size:16px;text-align:center;">Tempo (V)</th>
- <th style="border:1px solid #000;padding:12px;width:15%;color:#dc2626;font-size:16px;text-align:center;">Pontos</th>
- <th style="border:1px solid #000;padding:12px;width:30%;font-size:16px;color:#000;text-align:center;">PARCIAL</th>
- <th style="border:1px solid #000;padding:12px;width:15%;color:#2563eb;font-size:16px;text-align:center;">Pontos</th>
- <th style="border:1px solid #000;padding:12px;width:20%;color:#2563eb;font-size:16px;text-align:center;">Tempo (A)</th>
- </tr>
- </thead>
+ <th style="border:1px solid #000;padding:12px;width:20%;color:#dc2626;font-size:16px;text-align:center;">${t('timeR')}</th>
+ <th style="border:1px solid #000;padding:12px;width:15%;color:#dc2626;font-size:16px;text-align:center;">${t('pts')}</th>
+ <th style="border:1px solid #000;padding:12px;width:30%;font-size:16px;color:#000;text-align:center;">${t('partial')}</th>
+ <th style="border:1px solid #000;padding:12px;width:15%;color:#2563eb;font-size:16px;text-align:center;">${t('pts')}</th>
+ <th style="border:1px solid #000;padding:12px;width:20%;color:#2563eb;font-size:16px;text-align:center;">${t('timeB')}</th>
+ </tr></thead>
  <tbody>${partialsRows}</tbody>
- <tfoot>
- <tr style="border-top:2px solid #000;background:#e2e8f0;">
+ <tfoot><tr style="border-top:2px solid #000;background:#e2e8f0;">
  <td colspan="2" style="border:1px solid #000;padding:15px;font-size:32px;font-weight:bold;color:#dc2626;">${s1}</td>
- <td style="border:1px solid #000;padding:15px;font-weight:bold;font-size:20px;color:#000;">PLACAR FINAL</td>
+ <td style="border:1px solid #000;padding:15px;font-weight:bold;font-size:20px;color:#000;">${t('finalScore')}</td>
  <td colspan="2" style="border:1px solid #000;padding:15px;font-size:32px;font-weight:bold;color:#2563eb;">${s2}</td>
- </tr>
- </tfoot>
- </table>
-
- <table style="width:100%;border-collapse:collapse;border:2px solid #000;">
- <tr>
+ </tr></tfoot></table>
+ <table style="width:100%;border-collapse:collapse;border:2px solid #000;"><tr>
  <td style="width:50%;border:1px solid #000;padding:15px;background:#fef2f2;vertical-align:top;">
- <div style="font-weight:bold;font-size:14px;margin-bottom:10px;color:#dc2626;border-bottom:2px solid #000;padding-bottom:6px;">VIOLAÇÕES (VERMELHO):</div>
- <div style="font-size:14px;color:#000;line-height:1.4;">${violsLines(state.p1.violations)}</div>
- </td>
+ <div style="font-weight:bold;font-size:14px;margin-bottom:10px;color:#dc2626;border-bottom:2px solid #000;padding-bottom:6px;">${t('violsRed')}</div>
+ <div style="font-size:14px;color:#000;line-height:1.4;">${violsLines(state.p1.violations)}</div></td>
  <td style="width:50%;border:1px solid #000;padding:15px;background:#eff6ff;vertical-align:top;">
- <div style="font-weight:bold;font-size:14px;margin-bottom:10px;color:#2563eb;border-bottom:2px solid #000;padding-bottom:6px;">VIOLAÇÕES (AZUL):</div>
- <div style="font-size:14px;color:#000;line-height:1.4;">${violsLines(state.p2.violations)}</div>
- </td>
- </tr>
- </table>
- ${winnerHtml}
- </div>`;
+ <div style="font-weight:bold;font-size:14px;margin-bottom:10px;color:#2563eb;border-bottom:2px solid #000;padding-bottom:6px;">${t('violsBlue')}</div>
+ <div style="font-size:14px;color:#000;line-height:1.4;">${violsLines(state.p2.violations)}</div></td>
+ </tr></table>${winnerHtml}</div>`;
 }
 
 function showSumulaPreview() {
@@ -798,19 +941,11 @@ function showSumulaPreview() {
  document.getElementById('sumula-bg').style.display = 'block';
  document.getElementById('sumula-modal').style.display = 'flex';
 }
-function closeSumulaPreview() {
- document.getElementById('sumula-bg').style.display = 'none';
- document.getElementById('sumula-modal').style.display = 'none';
-}
-function printSumula() {
- document.getElementById('print-area').innerHTML = buildSumulaHTML();
- closeSumulaPreview();
- setTimeout(() => window.print(), 200);
-}
+function closeSumulaPreview() { document.getElementById('sumula-bg').style.display = 'none'; document.getElementById('sumula-modal').style.display = 'none'; }
+function printSumula() { document.getElementById('print-area').innerHTML = buildSumulaHTML(); closeSumulaPreview(); setTimeout(() => window.print(), 200); }
 
-// ── RESET ────────────────────────────────────────────────────────────
 function resetGame() {
- if (!confirm('Zerar jogo completo e voltar à configuração?')) return;
+ if (!confirm(t('confirmReset'))) return;
  clearInterval(timerInterval); state = null; selectedClass = null;
  try { localStorage.removeItem('placar_bocha_state'); } catch(_) {}
  document.getElementById('game-screen').style.display = 'none';
@@ -820,11 +955,10 @@ function resetGame() {
  ['p1-name','p1-club','p2-name','p2-club'].forEach(id => document.getElementById(id).value = '');
 }
 
-// ── TELÃO / SCOREBOARD (nova aba, réplica fiel do SCBP) ─────────────
 function openTelao() {
  if (!state) return;
  const w = window.open('', '_blank');
- if (!w) { alert('Pop-up bloqueado. Permita pop-ups para este site.'); return; }
+ if (!w) { alert(t('popupBlocked')); return; }
  const s1 = state.p1.score, s2 = state.p2.score;
  const inTB = state.p1.tbScore !== null;
  const tbHtml = inTB ? `<div style="font-size:40px;color:#fbbf24;font-weight:900;margin-top:8px;">TB: ${state.p1.tbScore} × ${state.p2.tbScore}</div>` : '';
@@ -835,73 +969,37 @@ function openTelao() {
  const label = p.isTB ? 'TB' : `E${i+1}`;
  partialsHtml += `<div style="background:#1e293b;border-radius:8px;padding:8px 14px;text-align:center;min-width:60px;">
  <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;">${label}</div>
- <div style="font-size:20px;font-weight:900;"><span style="color:#dc2626;">${p.s1}</span> × <span style="color:#2563eb;">${p.s2}</span></div>
- </div>`;
+ <div style="font-size:20px;font-weight:900;"><span style="color:#dc2626;">${p.s1}</span> × <span style="color:#2563eb;">${p.s2}</span></div></div>`;
  });
  partialsHtml += '</div>';
  }
- w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Telão — ${esc(state.p1.name)} × ${esc(state.p2.name)}</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:#000;color:#fff;font-family:sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-.header{background:#0f172a;padding:12px 24px;text-align:center;border-bottom:2px solid #334155;}
-.header h1{font-size:22px;color:#fbbf24;text-transform:uppercase;letter-spacing:2px;}
-.header .class{font-size:14px;color:#94a3b8;margin-top:4px;}
-.panels{display:flex;flex:1;}
+ const telaoTitle = currentLang === 'en' ? 'Scoreboard' : currentLang === 'es' ? 'Pantalla' : 'Telão';
+ w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${telaoTitle} — ${esc(state.p1.name)} × ${esc(state.p2.name)}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;}body{background:#000;color:#fff;font-family:sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+.header{background:#0f172a;padding:12px 24px;text-align:center;border-bottom:2px solid #334155;}.header h1{font-size:22px;color:#fbbf24;text-transform:uppercase;letter-spacing:2px;}
+.header .class{font-size:14px;color:#94a3b8;margin-top:4px;}.panels{display:flex;flex:1;}
 .panel{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
-.panel-red{background:#dc2626;border-right:2px solid #000;}
-.panel-blue{background:#2563eb;border-left:2px solid #000;}
+.panel-red{background:#dc2626;border-right:2px solid #000;}.panel-blue{background:#2563eb;border-left:2px solid #000;}
 .name{font-size:clamp(24px,4vw,48px);font-weight:900;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,0.5);text-align:center;line-height:1.1;}
 .club{font-size:clamp(14px,2vw,24px);font-weight:700;opacity:0.9;margin-top:6px;text-transform:uppercase;text-align:center;}
 .score{font-size:clamp(100px,20vw,260px);font-weight:900;line-height:1;background:rgba(0,0,0,0.4);border-radius:20px;padding:0 40px;border:3px solid rgba(255,255,255,0.2);text-shadow:0 4px 15px rgba(0,0,0,0.5);margin:16px 0;}
 .center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;text-align:center;}
 .end-badge{background:rgba(15,23,42,0.95);border:2px solid #fbbf24;border-radius:12px;padding:10px 24px;font-size:28px;font-weight:900;color:#fbbf24;text-transform:uppercase;letter-spacing:2px;}
 .viols{margin-top:12px;font-size:14px;color:rgba(255,255,255,0.8);max-width:80%;text-align:center;}
-@media(max-width:700px){.panels{flex-direction:column;}.panel-red{border-right:none;border-bottom:2px solid #000;}.panel-blue{border-left:none;border-top:2px solid #000;}.score{font-size:clamp(60px,15vw,120px);padding:0 20px;}}
-</style></head><body>
+@media(max-width:700px){.panels{flex-direction:column;}.panel-red{border-right:none;border-bottom:2px solid #000;}.panel-blue{border-left:none;border-top:2px solid #000;}.score{font-size:clamp(60px,15vw,120px);padding:0 20px;}}</style></head><body>
 <div class="header"><h1>${esc(state.p1.name)} × ${esc(state.p2.name)}</h1><div class="class">${esc(state.classCode)} — ${inTB ? 'TIEBREAK' : 'END '+state.currentEnd}</div></div>
 <div class="panels">
-<div class="panel panel-red">
-<div class="name">${esc(state.p1.name)}</div>
-${state.p1.club ? `<div class="club">${esc(state.p1.club)}</div>` : ''}
-<div class="score">${s1}</div>
-${state.p1.violations.length ? `<div class="viols">⚠️ ${state.p1.violations.length} violação(ões)</div>` : ''}
-</div>
+<div class="panel panel-red"><div class="name">${esc(state.p1.name)}</div>${state.p1.club ? `<div class="club">${esc(state.p1.club)}</div>` : ''}<div class="score">${s1}</div>${state.p1.violations.length ? `<div class="viols">⚠️ ${state.p1.violations.length}</div>` : ''}</div>
 <div class="center"><div class="end-badge">${inTB ? 'TIEBREAK' : 'END '+state.currentEnd}</div>${tbHtml}</div>
-<div class="panel panel-blue">
-<div class="name">${esc(state.p2.name)}</div>
-${state.p2.club ? `<div class="club">${esc(state.p2.club)}</div>` : ''}
-<div class="score">${s2}</div>
-${state.p2.violations.length ? `<div class="viols">⚠️ ${state.p2.violations.length} violação(ões)</div>` : ''}
-</div>
-</div>
-${partialsHtml}
-<script>
-// Auto-refresh: lê localStorage a cada 2s para espelhar atualizações
-setInterval(function(){
- try{
- var s=JSON.parse(localStorage.getItem('placar_bocha_state'));
- if(!s)return;
- var scores=document.querySelectorAll('.score');
- if(scores[0])scores[0].textContent=s.p1.score;
- if(scores[1])scores[1].textContent=s.p2.score;
- var badge=document.querySelector('.end-badge');
- var inTB=s.p1.tbScore!==null;
- if(badge)badge.textContent=inTB?'TIEBREAK':'END '+s.currentEnd;
- }catch(e){}
-},2000);
-<\/script>
-</body></html>`);
+<div class="panel panel-blue"><div class="name">${esc(state.p2.name)}</div>${state.p2.club ? `<div class="club">${esc(state.p2.club)}</div>` : ''}<div class="score">${s2}</div>${state.p2.violations.length ? `<div class="viols">⚠️ ${state.p2.violations.length}</div>` : ''}</div>
+</div>${partialsHtml}
+<script>setInterval(function(){try{var s=JSON.parse(localStorage.getItem('placar_bocha_state'));if(!s)return;var sc=document.querySelectorAll('.score');if(sc[0])sc[0].textContent=s.p1.score;if(sc[1])sc[1].textContent=s.p2.score;var b=document.querySelector('.end-badge');var tb=s.p1.tbScore!==null;if(b)b.textContent=tb?'TIEBREAK':'END '+s.currentEnd;}catch(e){}},2000);<\/script></body></html>`);
  w.document.close();
 }
 
-// ── FULLSCREEN ───────────────────────────────────────────────────────
-function toggleFS() {
- if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
- else document.exitFullscreen().catch(()=>{});
-}
+function toggleFS() { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen().catch(()=>{}); }
 
-// ── EVENT BINDINGS ───────────────────────────────────────────────────
+// EVENT BINDINGS
 document.getElementById('btn-menu').onclick = () => document.getElementById('sidebar').classList.add('open');
 document.getElementById('btn-menu-close').onclick = () => document.getElementById('sidebar').classList.remove('open');
 document.getElementById('btn-reset').onclick = resetGame;
@@ -917,22 +1015,12 @@ document.getElementById('modal-bg').onclick = closeViolationModal;
 document.getElementById('btn-sumula-close').onclick = closeSumulaPreview;
 document.getElementById('sumula-bg').onclick = closeSumulaPreview;
 document.getElementById('btn-sumula-print').onclick = printSumula;
-
-// Ball controls
-document.querySelectorAll('.btn-ball-ctrl').forEach(btn => {
- btn.onclick = () => adjustBalls(btn.dataset.side, +btn.dataset.dir);
-});
-
-// Violation buttons
-document.querySelectorAll('.btn-viol').forEach(btn => {
- btn.onclick = () => openViolationModal(btn.dataset.side);
-});
-
-// Score click to increment
+document.querySelectorAll('.btn-ball-ctrl').forEach(btn => { btn.onclick = () => adjustBalls(btn.dataset.side, +btn.dataset.dir); });
+document.querySelectorAll('.btn-viol').forEach(btn => { btn.onclick = () => openViolationModal(btn.dataset.side); });
 document.getElementById('p1-end-score').onclick = () => adjustScore('p1', 1);
 document.getElementById('p2-end-score').onclick = () => adjustScore('p2', 1);
 
-// ── INIT ─────────────────────────────────────────────────────────────
+// INIT
 (function init() {
  if (loadState() && state && state.p1.name) {
  document.getElementById('setup-screen').style.display = 'none';
