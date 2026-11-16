@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Placar Bocha Offline</title>
+<style>
+:root {
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --red-border: #fca5a5;
+  --blue: #2563eb;
+  --blue-bg: #eff6ff;
+  --blue-border: #93c5fd;
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #f59e0b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+/* SETUP SCREEN */
+#setup-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; gap: 24px; }
+.setup-card { background: var(--card); border-radius: 16px; padding: 32px; width: 100%; max-width: 500px; }
+.setup-card h1 { text-align: center; font-size: 28px; margin-bottom: 8px; }
+.setup-card p { text-align: center; color: var(--muted); margin-bottom: 24px; font-size: 14px; }
+.player-setup { display: flex; gap: 16px; margin-bottom: 20px; }
+.player-input { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.player-input label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.player-input.red label { color: var(--red); }
+.player-input.blue label { color: var(--blue); }
+.player-input input { padding: 12px; border-radius: 8px; border: 2px solid #334155; background: #0f172a; color: white; font-size: 15px; outline: none; transition: border-color 0.2s; }
+.player-input input:focus { border-color: var(--accent); }
+.player-input.red input:focus { border-color: var(--red); }
+.player-input.blue input:focus { border-color: var(--blue); }
+.btn-start { width: 100%; padding: 16px; border: none; border-radius: 12px; background: var(--accent); color: #0f172a; font-size: 18px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s; }
+.btn-start:active { transform: scale(0.98); }
+
+/* GAME SCREEN */
+#game-screen { display: none; flex-direction: column; min-height: 100vh; }
+.top-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; background: #020617; font-size: 13px; color: var(--muted); }
+.top-bar button { background: none; border: 1px solid #334155; color: var(--muted); padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+
+.scoreboard { display: flex; flex: 1; }
+.side { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; position: relative; transition: background 0.3s; }
+.side.red { background: var(--red-bg); border-right: 2px solid #334155; }
+.side.blue { background: var(--blue-bg); }
+.side.active-turn { box-shadow: inset 0 0 0 3px var(--accent); }
+
+.player-name { font-size: clamp(18px, 3vw, 28px); font-weight: 800; text-align: center; margin-bottom: 4px; word-break: break-word; max-width: 100%; }
+.side.red .player-name { color: var(--red); }
+.side.blue .player-name { color: var(--blue); }
+.club-name { font-size: clamp(12px, 2vw, 16px); color: #475569; font-weight: 600; margin-bottom: 16px; text-align: center; }
+
+.score-display { font-size: clamp(64px, 15vw, 140px); font-weight: 900; line-height: 1; margin: 8px 0; }
+.side.red .score-display { color: var(--red); }
+.side.blue .score-display { color: var(--blue); }
+
+.tb-score { font-size: 18px; font-weight: 700; color: var(--accent); min-height: 24px; }
+
+.controls { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
+.btn { padding: 10px 18px; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s, opacity 0.2s; }
+.btn:active { transform: scale(0.95); }
+.btn-plus { background: #22c55e; color: white; font-size: 22px; min-width: 50px; }
+.btn-minus { background: #ef4444; color: white; font-size: 18px; min-width: 44px; }
+.btn-viol { background: var(--accent); color: #0f172a; font-size: 13px; }
+.btn-tb { background: #8b5cf6; color: white; font-size: 13px; }
+
+/* CENTER PANEL */
+.center-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; background: #020617; min-width: 100px; gap: 8px; }
+.end-indicator { font-size: 14px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.end-number { font-size: 36px; font-weight: 900; color: var(--accent); }
+.timer { font-size: 20px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.balls-row { display: flex; gap: 4px; margin-top: 4px; }
+.ball { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #475569; }
+.ball.filled { background: var(--accent); border-color: var(--accent); }
+
+/* PARTIALS TABLE */
+.partials-bar { background: #020617; padding: 8px 16px; display: flex; justify-content: center; gap: 2px; flex-wrap: wrap; }
+.partial-cell { display: flex; flex-direction: column; align-items: center; min-width: 40px; padding: 4px 6px; border-radius: 4px; background: #1e293b; }
+.partial-cell.header { background: transparent; font-size: 10px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+.partial-cell .label { font-size: 9px; color: var(--muted); margin-bottom: 2px; }
+.partial-cell .val { font-size: 14px; font-weight: 800; }
+.partial-cell .val.red { color: var(--red); }
+.partial-cell .val.blue { color: var(--blue); }
+
+/* VIOLATIONS LOG */
+.violations-bar { background: #1a0a0a; padding: 6px 16px; max-height: 80px; overflow-y: auto; font-size: 12px; }
+.violations-bar:empty { display: none; }
+.viol-entry { padding: 2px 0; color: #fca5a5; border-bottom: 1px solid #331111; }
+.viol-entry:last-child { border-bottom: none; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--card); border-radius: 16px; padding: 24px; max-width: 480px; width: 90%; max-height: 80vh; overflow-y: auto; }
+.modal h3 { margin-bottom: 12px; font-size: 18px; }
+.modal select, .modal input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 14px; margin-bottom: 12px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+.modal-actions button { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; }
+.btn-confirm { background: var(--accent); color: #0f172a; }
+.btn-cancel { background: #334155; color: white; }
+
+/* FULLSCREEN BTN */
+.fs-btn { position: fixed; bottom: 12px; right: 12px; z-index: 50; background: #334155; color: white; border: none; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 16px; opacity: 0.6; }
+.fs-btn:hover { opacity: 1; }
+
+@media (max-width: 600px) {
+  .scoreboard { flex-direction: column; }
+  .side.red { border-right: none; border-bottom: 2px solid #334155; }
+  .center-panel { flex-direction: row; min-width: unset; padding: 6px 12px; gap: 16px; }
+  .score-display { font-size: clamp(48px, 12vw, 80px); }
+}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup-screen">
+  <div class="setup-card">
+    <h1>🎯 Placar Bocha</h1>
+    <p>Configure os atletas antes de iniciar a partida</p>
+    <div class="player-setup">
+      <div class="player-input red">
+        <label>🔴 Vermelho — Atleta</label>
+        <input type="text" id="p1-name" placeholder="Nome do atleta" autocomplete="off">
+        <label style="margin-top:6px;">Clube / Equipe</label>
+        <input type="text" id="p1-club" placeholder="Clube ou equipe" autocomplete="off">
+      </div>
+      <div class="player-input blue">
+        <label>🔵 Azul — Atleta</label>
+        <input type="text" id="p2-name" placeholder="Nome do atleta" autocomplete="off">
+        <label style="margin-top:6px;">Clube / Equipe</label>
+        <input type="text" id="p2-club" placeholder="Clube ou equipe" autocomplete="off">
+      </div>
+    </div>
+    <button class="btn-start" onclick="startGame()">Iniciar Partida</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game-screen">
+  <div class="top-bar">
+    <span id="match-info">Partida em andamento</span>
+    <div style="display:flex;gap:6px;">
+      <button onclick="resetGame()">Nova Partida</button>
+      <button onclick="exportSumula()">📄 Súmula</button>
+    </div>
+  </div>
+
+  <div class="scoreboard">
+    <!-- RED SIDE -->
+    <div class="side red" id="side-red">
+      <div class="player-name" id="disp-p1-name">VERMELHO</div>
+      <div class="club-name" id="disp-p1-club"></div>
+      <div class="score-display" id="disp-p1-score">0</div>
+      <div class="tb-score" id="disp-p1-tb"></div>
+      <div class="controls">
+        <button class="btn btn-minus" onclick="adjustScore('p1',-1)">−</button>
+        <button class="btn btn-plus" onclick="adjustScore('p1',1)">+</button>
+        <button class="btn btn-viol" onclick="openViolation('p1')">⚠️ Viol.</button>
+        <button class="btn btn-tb" onclick="toggleTB('p1')">TB</button>
+      </div>
+      <div class="balls-row" id="p1-balls"></div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="center-panel">
+      <div class="end-indicator">End</div>
+      <div class="end-number" id="end-num">1</div>
+      <div class="timer" id="timer-display">05:00</div>
+      <button class="btn" style="padding:6px 14px;font-size:13px;background:#334155;color:white;" onclick="nextEnd()">Próximo End ▶</button>
+    </div>
+
+    <!-- BLUE SIDE -->
+    <div class="side blue" id="side-blue">
+      <div class="player-name" id="disp-p2-name">AZUL</div>
+      <div class="club-name" id="disp-p2-club"></div>
+      <div class="score-display" id="disp-p2-score">0</div>
+      <div class="tb-score" id="disp-p2-tb"></div>
+      <div class="controls">
+        <button class="btn btn-minus" onclick="adjustScore('p2',-1)">−</button>
+        <button class="btn btn-plus" onclick="adjustScore('p2',1)">+</button>
+        <button class="btn btn-viol" onclick="openViolation('p2')">⚠️ Viol.</button>
+        <button class="btn btn-tb" onclick="toggleTB('p2')">TB</button>
+      </div>
+      <div class="balls-row" id="p2-balls"></div>
+    </div>
+  </div>
+
+  <!-- PARTIALS -->
+  <div class="partials-bar" id="partials-bar"></div>
+
+  <!-- VIOLATIONS LOG -->
+  <div class="violations-bar" id="violations-log"></div>
+</div>
+
+<!-- VIOLATION MODAL -->
+<div class="modal-overlay" id="viol-modal">
+  <div class="modal">
+    <h3 id="viol-title">Registrar Violação</h3>
+    <select id="viol-select"></select>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeViolation()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmViolation()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<button class="fs-btn" onclick="toggleFullscreen()" title="Tela cheia">⛶</button>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────
+const MAX_ENDS = 4;
+const BALLS_PER_END = 6;
+
+const VIOLATION_GROUPS = [
+  { group: 'Retração (Art. 16.5)', penalty: 'Retração', rules: [
+    { code: '16.5.1', text: 'Lançar antes da autorização do árbitro.' },
+    { code: '16.5.2', text: 'Atleta BC3 não liberar a bola diretamente.' },
+    { code: '16.5.3', text: 'SA/RO tocar no atleta/equipamento durante o lançamento.' },
+    { code: '16.5.4', text: 'Lançamento simultâneo (Atleta e RO).' },
+    { code: '16.5.5', text: 'Jogar bola colorida antes da Jack (Branca).' },
+    { code: '16.5.6', text: 'Primeira bola colorida jogada por atleta errado.' },
+    { code: '16.5.7', text: 'Atleta BC3 não realizar two-way swing.' },
+    { code: '16.5.8', text: 'BC3 não reorientar a calha ao retornar à área de jogo.' },
+    { code: '16.5.9', text: 'Jogar mais de uma bola ao mesmo tempo.' }
+  ]},
+  { group: 'Bola de Penalidade (Art. 16.6)', penalty: 'Bola de Penalidade', rules: [
+    { code: '16.6.1', text: 'Invadir a área de jogo fora da vez.' },
+    { code: '16.6.2', text: 'RO olhar para a quadra antes do fim do parcial.' },
+    { code: '16.6.3', text: 'Preparar jogada no tempo do adversário.' },
+    { code: '16.6.4', text: 'SA/RO mover equipamento/bola sem pedido do atleta.' },
+    { code: '16.6.5', text: 'Não sair do caminho após a 1ª advertência verbal.' },
+    { code: '16.6.6', text: 'Tocar acidentalmente em uma bola na quadra.' },
+    { code: '16.6.7', text: 'Atrasar a partida de forma não razoável.' },
+    { code: '16.6.8', text: 'Não aceitar a decisão do árbitro.' },
+    { code: '16.6.9', text: 'SA, RO ou Técnico invadir a quadra sem permissão.' },
+    { code: '16.6.10', text: 'Falta de cooperação durante o aquecimento.' }
+  ]},
+  { group: 'Retração + Penalidade (Art. 16.7)', penalty: 'Retração + Penalidade', rules: [
+    { code: '16.7.1', text: 'Tocar na linha ou fora do box durante o lançamento.' },
+    { code: '16.7.2', text: 'Calha ultrapassando a linha de lançamento.' },
+    { code: '16.7.3', text: 'Lançar sem contato do glúteo/abdômen com o assento.' },
+    { code: '16.7.4', text: 'Bola tocar fora do box durante o lançamento.' },
+    { code: '16.7.5', text: 'Lançar a bola enquanto o RO olha para a quadra.' },
+    { code: '16.7.6', text: 'Altura do assento superior a 66 cm (BC1, BC2, BC4).' },
+    { code: '16.7.7', text: 'Lançar enquanto um colega retorna à área de jogo.' },
+    { code: '16.7.8', text: 'Preparar e lançar a bola na vez do adversário.' }
+  ]},
+  { group: 'Penalidade + Amarelo (Art. 16.8)', penalty: 'Penalidade + Amarelo', rules: [
+    { code: '16.8.1', text: 'Distrair ou interferir na ação do adversário.' },
+    { code: '16.8.2', text: 'Comunicação inadequada entre a equipe na quadra.' }
+  ]},
+  { group: 'Cartão Amarelo (Art. 16.9)', penalty: 'Cartão Amarelo', rules: [
+    { code: '16.9.1', text: 'Invasão ou excesso de pessoas no Aquecimento/Call Room.' },
+    { code: '16.9.2', text: 'Excesso de bolas levadas para a Call Room.' },
+    { code: '16.9.3', text: 'Falha na checagem de bolas pré-jogo.' },
+    { code: '16.9.4', text: 'Sair da quadra sem permissão do árbitro.' },
+    { code: '16.9.5', text: 'Uso de equipamento não aprovado.' }
+  ]},
+  { group: 'Cartão Vermelho (Art. 16.11)', penalty: 'Cartão Vermelho', rules: [
+    { code: '16.11.1', text: 'Comportamento antidesportivo.' },
+    { code: '16.11.2', text: 'Conduta violenta.' },
+    { code: '16.11.3', text: 'Uso de linguagem ou gestos abusivos.' }
+  ]},
+  { group: 'Forfeit (Art. 16.12)', penalty: 'Forfeit', rules: [
+    { code: '16.12.1', text: 'Quebrar equipamento do adversário impedindo o jogo.' },
+    { code: '16.12.2', text: 'Falhar na checagem de bolas pós-jogo.' },
+    { code: '16.12.3', text: 'Atleta/RO abandonar a quadra sem permissão.' },
+    { code: '16.12.4', text: 'Ter menos de 3 bolas aprovadas no pré-jogo.' }
+  ]}
+];
+
+let state = null;
+let activeViolSide = null;
+let timerInterval = null;
+
+function defaultState() {
+  return {
+    p1: { name: '', club: '', score: 0, tbScore: null, ballsUsed: 0 },
+    p2: { name: '', club: '', score: 0, tbScore: null, ballsUsed: 0 },
+    currentEnd: 1,
+    partials: [], // [{p1: n, p2: n}]
+    violations: [], // [{side, end, code, text, penalty, time}]
+    timerSeconds: 300,
+    startedAt: new Date().toISOString(),
+    finished: false
+  };
+}
+
+// ── PERSISTENCE ────────────────────────────────────────────────────────
+function saveState() {
+  if (!state) return;
+  try { localStorage.setItem('placar_bocha_state', JSON.stringify(state)); } catch(_) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('placar_bocha_state');
+    if (raw) { state = JSON.parse(raw); return true; }
+  } catch(_) {}
+  return false;
+}
+
+// ── SETUP ──────────────────────────────────────────────────────────────
+function startGame() {
+  const p1Name = document.getElementById('p1-name').value.trim();
+  const p2Name = document.getElementById('p2-name').value.trim();
+  if (!p1Name || !p2Name) { alert('Informe o nome de ambos os atletas.'); return; }
+
+  state = defaultState();
+  state.p1.name = p1Name;
+  state.p1.club = document.getElementById('p1-club').value.trim();
+  state.p2.name = p2Name;
+  state.p2.club = document.getElementById('p2-club').value.trim();
+
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'flex';
+
+  startTimer();
+  render();
+  saveState();
+}
+
+function resetGame() {
+  if (!confirm('Encerrar esta partida e voltar à configuração?')) return;
+  stopTimer();
+  state = null;
+  try { localStorage.removeItem('placar_bocha_state'); } catch(_) {}
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('setup-screen').style.display = 'flex';
+  document.getElementById('p1-name').value = '';
+  document.getElementById('p1-club').value = '';
+  document.getElementById('p2-name').value = '';
+  document.getElementById('p2-club').value = '';
+}
+
+// ── TIMER ──────────────────────────────────────────────────────────────
+function startTimer() {
+  stopTimer();
+  timerInterval = setInterval(() => {
+    if (!state || state.finished) return;
+    if (state.timerSeconds > 0) {
+      state.timerSeconds--;
+      updateTimerDisplay();
+      if (state.timerSeconds % 10 === 0) saveState();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function updateTimerDisplay() {
+  if (!state) return;
+  const m = Math.floor(state.timerSeconds / 60);
+  const s = state.timerSeconds % 60;
+  document.getElementById('timer-display').textContent =
+    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+// ── SCORE ──────────────────────────────────────────────────────────────
+function adjustScore(side, delta) {
+  if (!state || state.finished) return;
+  const isTB = state.p1.tbScore !== null || state.p2.tbScore !== null;
+
+  if (isTB) {
+    const key = side === 'p1' ? 'p1' : 'p2';
+    if (state[key].tbScore === null) state[key].tbScore = 0;
+    state[key].tbScore = Math.max(0, state[key].tbScore + delta);
+  } else {
+    state[side].score = Math.max(0, state[side].score + delta);
+  }
+
+  render();
+  saveState();
+}
+
+// ── TIEBREAK ───────────────────────────────────────────────────────────
+function toggleTB(side) {
+  if (!state || state.finished) return;
+  // Inicia TB se scores empatados
+  if (state.p1.tbScore === null && state.p2.tbScore === null) {
+    if (state.p1.score !== state.p2.score) {
+      alert('Tiebreak só pode ser iniciado quando o placar estiver empatado.');
+      return;
+    }
+    if (!confirm(`Iniciar Tiebreak?\nPlacar atual: ${state.p1.score} × ${state.p2.score}`)) return;
+    state.p1.tbScore = 0;
+    state.p2.tbScore = 0;
+    state.timerSeconds = 300;
+  } else {
+    // Cancelar TB
+    if (!confirm('Cancelar o Tiebreak?')) return;
+    state.p1.tbScore = null;
+    state.p2.tbScore = null;
+  }
+  render();
+  saveState();
+}
+
+// ── END MANAGEMENT ────────────────────────────────────────────────────
+function nextEnd() {
+  if (!state || state.finished) return;
+
+  // Se estamos em TB, o TB é o "end" extra
+  const inTB = state.p1.tbScore !== null;
+
+  if (inTB) {
+    // Finaliza TB
+    const tbResult = { p1: state.p1.tbScore, p2: state.p2.tbScore, isTB: true };
+    state.partials.push(tbResult);
+    state.finished = true;
+    stopTimer();
+    render();
+    saveState();
+    showWinner();
+    return;
+  }
+
+  // Salva parcial do end atual
+  state.partials.push({ p1: state.p1.score, p2: state.p2.score, isTB: false });
+
+  if (state.currentEnd >= MAX_ENDS) {
+    // Fim dos ends regulares
+    if (state.p1.score === state.p2.score) {
+      if (confirm(`Placar empatado em ${state.p1.score} × ${state.p2.score}.\n\nDeseja iniciar o Tiebreak?`)) {
+        state.p1.tbScore = 0;
+        state.p2.tbScore = 0;
+        state.timerSeconds = 300;
+        render();
+        saveState();
+        return;
+      }
+    }
+    state.finished = true;
+    stopTimer();
+    render();
+    saveState();
+    showWinner();
+    return;
+  }
+
+  state.currentEnd++;
+  state.p1.ballsUsed = 0;
+  state.p2.ballsUsed = 0;
+  state.timerSeconds = 300;
+  render();
+  saveState();
+}
+
+function showWinner() {
+  let winner = null;
+  let subStatus = 'NORMAL';
+
+  if (state.p1.tbScore !== null && state.p2.tbScore !== null) {
+    if (state.p1.tbScore > state.p2.tbScore) winner = state.p1.name;
+    else if (state.p2.tbScore > state.p1.tbScore) winner = state.p2.name;
+    subStatus = 'TIE_BREAK';
+  } else {
+    if (state.p1.score > state.p2.score) winner = state.p1.name;
+    else if (state.p2.score > state.p1.score) winner = state.p2.name;
+  }
+
+  const msg = winner
+    ? `🏆 Vencedor: ${winner}\n(${subStatus === 'TIE_BREAK' ? 'via Tiebreak' : 'Tempo Regular'})`
+    : `⚖️ Empate: ${state.p1.score} × ${state.p2.score}`;
+
+  setTimeout(() => alert(msg), 300);
+}
+
+// ── VIOLATIONS ─────────────────────────────────────────────────────────
+function openViolation(side) {
+  if (!state || state.finished) return;
+  activeViolSide = side;
+  const sideLabel = side === 'p1' ? '🔴 ' + state.p1.name : '🔵 ' + state.p2.name;
+  document.getElementById('viol-title').textContent = `Violação — ${sideLabel}`;
+
+  const sel = document.getElementById('viol-select');
+  sel.innerHTML = '<option value="">Selecione a violação...</option>';
+  VIOLATION_GROUPS.forEach(g => {
+    const og = document.createElement('optgroup');
+    og.label = g.group;
+    g.rules.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = `${r.code}|${r.text}|${g.penalty}`;
+      opt.textContent = `${r.code} — ${r.text}`;
+      og.appendChild(opt);
+    });
+    sel.appendChild(og);
+  });
+
+  document.getElementById('viol-modal').classList.add('open');
+}
+
+function closeViolation() {
+  document.getElementById('viol-modal').classList.remove('open');
+  activeViolSide = null;
+}
+
+function confirmViolation() {
+  const val = document.getElementById('viol-select').value;
+  if (!val) { alert('Selecione uma violação.'); return; }
+
+  const [code, text, penalty] = val.split('|');
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+  state.violations.push({
+    side: activeViolSide,
+    end: state.currentEnd,
+    code, text, penalty, time: timeStr
+  });
+
+  // Bola de penalidade: marca no oponente
+  if (penalty.includes('Penalidade')) {
+    const opp = activeViolSide === 'p1' ? 'p2' : 'p1';
+    state[opp].ballsUsed = Math.min(BALLS_PER_END, state[opp].ballsUsed + 1);
+  }
+
+  closeViolation();
+  render();
+  saveState();
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────
+function render() {
+  if (!state) return;
+
+  document.getElementById('disp-p1-name').textContent = state.p1.name || 'VERMELHO';
+  document.getElementById('disp-p1-club').textContent = state.p1.club || '';
+  document.getElementById('disp-p2-name').textContent = state.p2.name || 'AZUL';
+  document.getElementById('disp-p2-club').textContent = state.p2.club || '';
+
+  document.getElementById('disp-p1-score').textContent = state.p1.score;
+  document.getElementById('disp-p2-score').textContent = state.p2.score;
+
+  // TB display
+  const inTB = state.p1.tbScore !== null;
+  document.getElementById('disp-p1-tb').textContent = inTB ? `TB: ${state.p1.tbScore}` : '';
+  document.getElementById('disp-p2-tb').textContent = inTB ? `TB: ${state.p2.tbScore}` : '';
+
+  // End
+  document.getElementById('end-num').textContent = inTB ? 'TB' : state.currentEnd;
+
+  // Timer
+  updateTimerDisplay();
+
+  // Balls
+  renderBalls('p1');
+  renderBalls('p2');
+
+  // Partials
+  renderPartials();
+
+  // Violations log
+  renderViolations();
+}
+
+function renderBalls(side) {
+  const container = document.getElementById(`${side}-balls`);
+  container.innerHTML = '';
+  for (let i = 0; i < BALLS_PER_END; i++) {
+    const ball = document.createElement('div');
+    ball.className = 'ball' + (i < state[side].ballsUsed ? ' filled' : '');
+    container.appendChild(ball);
+  }
+}
+
+function renderPartials() {
+  const bar = document.getElementById('partials-bar');
+  bar.innerHTML = '';
+
+  // Header
+  const hdr = document.createElement('div');
+  hdr.className = 'partial-cell header';
+  hdr.innerHTML = '<span>E1</span>';
+  // We'll build headers dynamically
+  bar.innerHTML = '';
+
+  // Build header row
+  const totalEnds = Math.max(MAX_ENDS, state.partials.length);
+  for (let i = 0; i < totalEnds; i++) {
+    const h = document.createElement('div');
+    h.className = 'partial-cell header';
+    const label = (i < state.partials.length && state.partials[i].isTB) ? 'TB' : `E${i+1}`;
+    h.textContent = label;
+    bar.appendChild(h);
+  }
+
+  // P1 row
+  for (let i = 0; i < state.partials.length; i++) {
+    const c = document.createElement('div');
+    c.className = 'partial-cell';
+    c.innerHTML = `<span class="val red">${state.partials[i].p1}</span>`;
+    bar.appendChild(c);
+  }
+
+  // Separator
+  const sep = document.createElement('div');
+  sep.style.cssText = 'width:100%;height:1px;background:#334155;margin:2px 0;';
+  bar.appendChild(sep);
+
+  // P2 row
+  for (let i = 0; i < state.partials.length; i++) {
+    const c = document.createElement('div');
+    c.className = 'partial-cell';
+    c.innerHTML = `<span class="val blue">${state.partials[i].p2}</span>`;
+    bar.appendChild(c);
+  }
+}
+
+function renderViolations() {
+  const log = document.getElementById('violations-log');
+  log.innerHTML = '';
+  state.violations.forEach(v => {
+    const sideIcon = v.side === 'p1' ? '🔴' : '🔵';
+    const sideName = v.side === 'p1' ? state.p1.name : state.p2.name;
+    const div = document.createElement('div');
+    div.className = 'viol-entry';
+    div.textContent = `${sideIcon} E${v.end} ${v.time} — ${v.code}: ${v.text} → ${v.penalty}`;
+    log.appendChild(div);
+  });
+}
+
+// ── EXPORT SÚMULA ──────────────────────────────────────────────────────
+function exportSumula() {
+  if (!state) return;
+
+  const date = new Date(state.startedAt).toLocaleDateString('pt-BR');
+  const time = new Date(state.startedAt).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+
+  let partialsText = state.partials.map((p, i) => {
+    const label = p.isTB ? 'TB' : `E${i+1}`;
+    return `${label}: ${p.p1} × ${p.p2}`;
+  }).join(' | ');
+
+  let violsText = state.violations.length === 0 ? 'Nenhuma' :
+    state.violations.map(v => {
+      const side = v.side === 'p1' ? state.p1.name : state.p2.name;
+      return `E${v.end} ${v.code} (${side}): ${v.text} → ${v.penalty}`;
+    }).join('\n');
+
+  let winnerText = '';
+  if (state.finished) {
+    if (state.p1.tbScore !== null && state.p1.tbScore > state.p2.tbScore) winnerText = `${state.p1.name} (Tiebreak)`;
+    else if (state.p2.tbScore !== null && state.p2.tbScore > state.p1.tbScore) winnerText = `${state.p2.name} (Tiebreak)`;
+    else if (state.p1.score > state.p2.score) winnerText = state.p1.name;
+    else if (state.p2.score > state.p1.score) winnerText = state.p2.name;
+    else winnerText = 'Empate';
+  } else {
+    winnerText = 'Partida em andamento';
+  }
+
+  const sumula = `═══════════════════════════════════════
+         SÚMULA DE PARTIDA — BOCHA
+═══════════════════════════════════════
+Data: ${date}  Hora: ${time}
+
+🔴 VERMELHO: ${state.p1.name}
+   Clube: ${state.p1.club || '—'}
+
+🔵 AZUL: ${state.p2.name}
+   Clube: ${state.p2.club || '—'}
+
+PLACAR FINAL: ${state.p1.score} × ${state.p2.score}
+${state.p1.tbScore !== null ? `TIEBREAK: ${state.p1.tbScore} × ${state.p2.tbScore}` : ''}
+
+PARCIAIS: ${partialsText || '—'}
+
+VIOLAÇÕES:
+${violsText}
+
+VENCEDOR: ${winnerText}
+═══════════════════════════════════════`;
+
+  // Download as .txt
+  const blob = new Blob([sumula], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `sumula_${state.p1.name}_vs_${state.p2.name}_${date.replace(/\//g,'-')}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── FULLSCREEN ─────────────────────────────────────────────────────────
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────
+(function init() {
+  if (loadState() && state && state.p1.name) {
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'flex';
+    if (!state.finished) startTimer();
+    render();
+  }
+})();
+</script>
+</body>
+</html>
