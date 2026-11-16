@@ -50,17 +50,17 @@ The scoreboard itself includes a **language selector** at the top (PT | EN | ES)
 ### 🏅 Supported official classes
 | Class | Format | Ends | Balls/athlete | Time/end |
 |-------|--------|------|---------------|----------|
-| BC1 | Individual | 4 | 6 | 6 min |
-| BC2 | Individual | 4 | 6 | 5 min |
+| BC1 | Individual | 4 | 6 | 4:30 min |
+| BC2 | Individual | 4 | 6 | 3:30 min |
 | BC3 | Individual (w/ RO) | 4 | 6 | 6 min |
-| BC4 | Individual | 4 | 6 | 5 min |
-| Pairs BC3 | Doubles | 4 | 3 | 6 min |
-| Pairs BC4 | Doubles | 4 | 3 | 5 min |
-| Team | Trio (BC1+BC2) | 6 | 2 | 6 min |
+| BC4 | Individual | 4 | 6 | 3:30 min |
+| Pairs BC3 | Doubles | 4 | 3 | 7 min |
+| Pairs BC4 | Doubles | 4 | 3 | 4 min |
+| Team | Trio (BC1+BC2) | 6 | 2 | 5 min |
 | ⚙️ Custom | Personalized | 1-10 | 1-6 | 60-900s |
 
-### 📱 Responsive
-- Works on laptops, tablets, and phones
+### 💻 Desktop
+- Desktop application (Windows, Mac, Linux)
 - Fullscreen mode (F11) available in the menu
 
 ---
@@ -135,13 +135,6 @@ This scoreboard follows the **Official World Boccia (BISFed) Rules 2025-2028**, 
 ## 🤝 Contributing
 
 Contributions are welcome! Open an issue or pull request.
-
-### Future ideas
-- [ ] Export scoresheet as JSON importable by SCBP
-- [ ] "Referee mode" with PIN protection for changes
-- [ ] Multi-court simultaneous support
-- [ ] Saved match history
-- [ ] Per-athlete statistics (cumulative across matches)
 
 ---
 

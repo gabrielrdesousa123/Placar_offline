@@ -50,17 +50,17 @@ El propio marcador incluye un **selector de idioma** en la parte superior (PT | 
 ### 🏅 Clases oficiales soportadas
 | Clase | Modalidad | Ends | Bolas/atleta | Tiempo/parcial |
 |-------|-----------|------|--------------|----------------|
-| BC1 | Individual | 4 | 6 | 6 min |
-| BC2 | Individual | 4 | 6 | 5 min |
+| BC1 | Individual | 4 | 6 | 4:30 min |
+| BC2 | Individual | 4 | 6 | 3:30 min |
 | BC3 | Individual (c/ RO) | 4 | 6 | 6 min |
-| BC4 | Individual | 4 | 6 | 5 min |
-| Parejas BC3 | Dobles | 4 | 3 | 6 min |
-| Parejas BC4 | Dobles | 4 | 3 | 5 min |
-| Equipo | Trío (BC1+BC2) | 6 | 2 | 6 min |
+| BC4 | Individual | 4 | 6 | 3:30 min |
+| Parejas BC3 | Dobles | 4 | 3 | 7 min |
+| Parejas BC4 | Dobles | 4 | 3 | 4 min |
+| Equipo | Trío (BC1+BC2) | 6 | 2 | 5 min |
 | ⚙️ Personalizado | Custom | 1-10 | 1-6 | 60-900s |
 
-### 📱 Responsivo
-- Funciona en portátil, tablet o móvil
+### 💻 Desktop
+- Aplicación de escritorio (Windows, Mac, Linux)
 - Modo pantalla completa (F11) disponible en el menú
 
 ---
@@ -135,13 +135,6 @@ Este marcador sigue las **Reglas Oficiales de World Boccia (BISFed) 2025-2028**,
 ## 🤝 Contribuir
 
 ¡Las contribuciones son bienvenidas! Abre un issue o pull request.
-
-### Ideas futuras
-- [ ] Exportar acta en formato JSON importable por SCBP
-- [ ] Modo "árbitro" con PIN para proteger cambios
-- [ ] Soporte multicancha simultáneo
-- [ ] Historial de partidos guardados
-- [ ] Estadísticas por atleta (acumulado entre partidos)
 
 ---
 

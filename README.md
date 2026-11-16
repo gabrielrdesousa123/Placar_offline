@@ -50,17 +50,17 @@ O próprio placar possui um **seletor de idioma** no topo (PT | EN | ES).
 ### 🏅 Classes oficiais suportadas
 | Classe | Modalidade | Ends | Bolas/atleta | Tempo/parcial |
 |--------|------------|------|--------------|----------------|
-| BC1 | Individual | 4 | 6 | 6 min |
-| BC2 | Individual | 4 | 6 | 5 min |
+| BC1 | Individual | 4 | 6 | 4:30 min |
+| BC2 | Individual | 4 | 6 | 3:30 min |
 | BC3 | Individual (c/ RO) | 4 | 6 | 6 min |
-| BC4 | Individual | 4 | 6 | 5 min |
-| Pares BC3 | Dupla | 4 | 3 | 6 min |
-| Pares BC4 | Dupla | 4 | 3 | 5 min |
-| Equipe | Trio (BC1+BC2) | 6 | 2 | 6 min |
+| BC4 | Individual | 4 | 6 | 3:30 min |
+| Pares BC3 | Dupla | 4 | 3 | 7 min |
+| Pares BC4 | Dupla | 4 | 3 | 4 min |
+| Equipe | Trio (BC1+BC2) | 6 | 2 | 5 min |
 | ⚙️ Custom | Personalizado | 1-10 | 1-6 | 60-900s |
 
-### 📱 Responsivo
-- Funciona em notebook, tablet ou celular
+### 💻 Desktop
+- Aplicativo para computador (Windows, Mac, Linux)
 - Modo tela cheia (F11) disponível no menu
 
 ---
@@ -135,13 +135,6 @@ Este placar segue as **Regras Oficiais da World Boccia (BISFed) 2025-2028**, em 
 ## 🤝 Contribuindo
 
 Contribuições são bem-vindas! Abra uma issue ou pull request.
-
-### Ideias para o futuro
-- [ ] Exportar súmula em formato JSON importável pelo SCBP
-- [ ] Modo "árbitro" com PIN para proteger alterações
-- [ ] Suporte a múltiplas quadras simultâneas
-- [ ] Histórico de partidas salvas
-- [ ] Estatísticas por atleta (acumulado de partidas)
 
 ---
 
