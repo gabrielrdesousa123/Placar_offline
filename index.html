@@ -215,6 +215,7 @@ body::-webkit-scrollbar { display: none; }
  <!-- SIDEBAR -->
  <div class="sidebar" id="sidebar">
  <div class="sidebar-header">⚙️ Menu</div>
+ <button class="sidebar-btn" id="btn-telao">📺 Telão / Scoreboard</button>
  <button class="sidebar-btn" id="btn-sumula">📄 Ver Súmula</button>
  <button class="sidebar-btn" id="btn-fullscreen">⛶ Tela Cheia</button>
  <button class="sidebar-btn close-btn" id="btn-menu-close">✕ FECHAR</button>
@@ -414,7 +415,24 @@ function saveState() {
  try { localStorage.setItem('placar_bocha_state', JSON.stringify(state)); } catch(_) {}
 }
 function loadState() {
- try { const r = localStorage.getItem('placar_bocha_state'); if (r) { state = JSON.parse(r); return true; } } catch(_) {}
+ try {
+ const r = localStorage.getItem('placar_bocha_state');
+ if (r) {
+ state = JSON.parse(r);
+ // Fix NaN: garantir que campos numéricos existam (state antigo pode não ter)
+ if (typeof state.p1.seconds !== 'number' || isNaN(state.p1.seconds)) state.p1.seconds = state.timerPerEnd || 300;
+ if (typeof state.p2.seconds !== 'number' || isNaN(state.p2.seconds)) state.p2.seconds = state.timerPerEnd || 300;
+ if (typeof state.timerPerEnd !== 'number' || isNaN(state.timerPerEnd)) state.timerPerEnd = 300;
+ if (typeof state.maxEnds !== 'number' || isNaN(state.maxEnds)) state.maxEnds = 4;
+ if (typeof state.ballsPerEnd !== 'number' || isNaN(state.ballsPerEnd)) state.ballsPerEnd = 6;
+ if (!Array.isArray(state.p1.violations)) state.p1.violations = [];
+ if (!Array.isArray(state.p2.violations)) state.p2.violations = [];
+ if (!Array.isArray(state.p1.penalties)) state.p1.penalties = [];
+ if (!Array.isArray(state.p2.penalties)) state.p2.penalties = [];
+ if (!Array.isArray(state.partials)) state.partials = [];
+ return true;
+ }
+ } catch(_) {}
  return false;
 }
 
@@ -433,11 +451,10 @@ function startGame() {
  if (!selectedClass) { alert('Selecione uma classe/modalidade.'); return; }
  const p1n = document.getElementById('p1-name').value.trim();
  const p2n = document.getElementById('p2-name').value.trim();
- if (!p1n || !p2n) { alert('Informe o nome de ambos os atletas.'); return; }
 
  state = defaultState();
- state.p1.name = p1n; state.p1.club = document.getElementById('p1-club').value.trim();
- state.p2.name = p2n; state.p2.club = document.getElementById('p2-club').value.trim();
+ state.p1.name = p1n || 'VERMELHO'; state.p1.club = document.getElementById('p1-club').value.trim();
+ state.p2.name = p2n || 'AZUL'; state.p2.club = document.getElementById('p2-club').value.trim();
 
  if (selectedClass.code === 'custom') {
  state.maxEnds = +document.getElementById('custom-ends').value || 4;
@@ -803,6 +820,81 @@ function resetGame() {
  ['p1-name','p1-club','p2-name','p2-club'].forEach(id => document.getElementById(id).value = '');
 }
 
+// ── TELÃO / SCOREBOARD (nova aba, réplica fiel do SCBP) ─────────────
+function openTelao() {
+ if (!state) return;
+ const w = window.open('', '_blank');
+ if (!w) { alert('Pop-up bloqueado. Permita pop-ups para este site.'); return; }
+ const s1 = state.p1.score, s2 = state.p2.score;
+ const inTB = state.p1.tbScore !== null;
+ const tbHtml = inTB ? `<div style="font-size:40px;color:#fbbf24;font-weight:900;margin-top:8px;">TB: ${state.p1.tbScore} × ${state.p2.tbScore}</div>` : '';
+ let partialsHtml = '';
+ if (state.partials.length > 0) {
+ partialsHtml = '<div style="display:flex;gap:6px;margin-top:16px;justify-content:center;flex-wrap:wrap;">';
+ state.partials.forEach((p, i) => {
+ const label = p.isTB ? 'TB' : `E${i+1}`;
+ partialsHtml += `<div style="background:#1e293b;border-radius:8px;padding:8px 14px;text-align:center;min-width:60px;">
+ <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;">${label}</div>
+ <div style="font-size:20px;font-weight:900;"><span style="color:#dc2626;">${p.s1}</span> × <span style="color:#2563eb;">${p.s2}</span></div>
+ </div>`;
+ });
+ partialsHtml += '</div>';
+ }
+ w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Telão — ${esc(state.p1.name)} × ${esc(state.p2.name)}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#000;color:#fff;font-family:sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+.header{background:#0f172a;padding:12px 24px;text-align:center;border-bottom:2px solid #334155;}
+.header h1{font-size:22px;color:#fbbf24;text-transform:uppercase;letter-spacing:2px;}
+.header .class{font-size:14px;color:#94a3b8;margin-top:4px;}
+.panels{display:flex;flex:1;}
+.panel{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+.panel-red{background:#dc2626;border-right:2px solid #000;}
+.panel-blue{background:#2563eb;border-left:2px solid #000;}
+.name{font-size:clamp(24px,4vw,48px);font-weight:900;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,0.5);text-align:center;line-height:1.1;}
+.club{font-size:clamp(14px,2vw,24px);font-weight:700;opacity:0.9;margin-top:6px;text-transform:uppercase;text-align:center;}
+.score{font-size:clamp(100px,20vw,260px);font-weight:900;line-height:1;background:rgba(0,0,0,0.4);border-radius:20px;padding:0 40px;border:3px solid rgba(255,255,255,0.2);text-shadow:0 4px 15px rgba(0,0,0,0.5);margin:16px 0;}
+.center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;text-align:center;}
+.end-badge{background:rgba(15,23,42,0.95);border:2px solid #fbbf24;border-radius:12px;padding:10px 24px;font-size:28px;font-weight:900;color:#fbbf24;text-transform:uppercase;letter-spacing:2px;}
+.viols{margin-top:12px;font-size:14px;color:rgba(255,255,255,0.8);max-width:80%;text-align:center;}
+@media(max-width:700px){.panels{flex-direction:column;}.panel-red{border-right:none;border-bottom:2px solid #000;}.panel-blue{border-left:none;border-top:2px solid #000;}.score{font-size:clamp(60px,15vw,120px);padding:0 20px;}}
+</style></head><body>
+<div class="header"><h1>${esc(state.p1.name)} × ${esc(state.p2.name)}</h1><div class="class">${esc(state.classCode)} — ${inTB ? 'TIEBREAK' : 'END '+state.currentEnd}</div></div>
+<div class="panels">
+<div class="panel panel-red">
+<div class="name">${esc(state.p1.name)}</div>
+${state.p1.club ? `<div class="club">${esc(state.p1.club)}</div>` : ''}
+<div class="score">${s1}</div>
+${state.p1.violations.length ? `<div class="viols">⚠️ ${state.p1.violations.length} violação(ões)</div>` : ''}
+</div>
+<div class="center"><div class="end-badge">${inTB ? 'TIEBREAK' : 'END '+state.currentEnd}</div>${tbHtml}</div>
+<div class="panel panel-blue">
+<div class="name">${esc(state.p2.name)}</div>
+${state.p2.club ? `<div class="club">${esc(state.p2.club)}</div>` : ''}
+<div class="score">${s2}</div>
+${state.p2.violations.length ? `<div class="viols">⚠️ ${state.p2.violations.length} violação(ões)</div>` : ''}
+</div>
+</div>
+${partialsHtml}
+<script>
+// Auto-refresh: lê localStorage a cada 2s para espelhar atualizações
+setInterval(function(){
+ try{
+ var s=JSON.parse(localStorage.getItem('placar_bocha_state'));
+ if(!s)return;
+ var scores=document.querySelectorAll('.score');
+ if(scores[0])scores[0].textContent=s.p1.score;
+ if(scores[1])scores[1].textContent=s.p2.score;
+ var badge=document.querySelector('.end-badge');
+ var inTB=s.p1.tbScore!==null;
+ if(badge)badge.textContent=inTB?'TIEBREAK':'END '+s.currentEnd;
+ }catch(e){}
+},2000);
+<\/script>
+</body></html>`);
+ w.document.close();
+}
+
 // ── FULLSCREEN ───────────────────────────────────────────────────────
 function toggleFS() {
  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
@@ -813,6 +905,7 @@ function toggleFS() {
 document.getElementById('btn-menu').onclick = () => document.getElementById('sidebar').classList.add('open');
 document.getElementById('btn-menu-close').onclick = () => document.getElementById('sidebar').classList.remove('open');
 document.getElementById('btn-reset').onclick = resetGame;
+document.getElementById('btn-telao').onclick = () => { document.getElementById('sidebar').classList.remove('open'); openTelao(); };
 document.getElementById('btn-sumula').onclick = () => { document.getElementById('sidebar').classList.remove('open'); showSumulaPreview(); };
 document.getElementById('btn-fullscreen').onclick = () => { document.getElementById('sidebar').classList.remove('open'); toggleFS(); };
 document.getElementById('btn-next-end').onclick = nextEnd;
