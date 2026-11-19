@@ -61,7 +61,7 @@ body::-webkit-scrollbar { display: none; }
 .p-body { padding: 12px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; overflow-y: hidden; position: relative; gap: 2.5vh; }
 .score-area { width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; padding-bottom: 1vh; margin-top: 10px; }
 .score-label { font-weight: bold; color: rgba(255,255,255,0.8); font-size: 13px; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px; }
-.score-val { font-size: clamp(80px, 15vw, 150px); font-weight: bold; user-select: none; background: rgba(0,0,0,0.4); border-radius: 20px; padding: 0 40px; border: 2px solid rgba(255,255,255,0.2); text-shadow: 0 4px 10px rgba(0,0,0,0.4); box-shadow: inset 0 4px 10px rgba(0,0,0,0.2); line-height: 1; margin: 0; color: #fff; }
+.score-val { font-size: clamp(80px, 15vw, 150px); font-weight: bold; user-select: none; cursor: pointer; background: rgba(0,0,0,0.4); border-radius: 20px; padding: 0 40px; border: 2px solid rgba(255,255,255,0.2); text-shadow: 0 4px 10px rgba(0,0,0,0.4); box-shadow: inset 0 4px 10px rgba(0,0,0,0.2); line-height: 1; margin: 0; color: #fff; }
 .timer-row { display: flex; align-items: center; justify-content: center; position: relative; width: 100%; max-width: 440px; background: #000; padding: 0.8vh 2vw; border-radius: 2vh; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.5); gap: 2vw; }
 .score-timer-block { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2.5vh; border-bottom: 2px dashed rgba(255,255,255,0.25); padding-bottom: 2vh; margin-bottom: 0.5vh; }
 .time-display { font-size: clamp(50px, 10vw, 110px); font-weight: bold; font-variant-numeric: tabular-nums; line-height: 1; color: white; cursor: pointer; transition: 0.2s; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
@@ -97,6 +97,11 @@ body::-webkit-scrollbar { display: none; }
 .btn-center:hover:not(:disabled) { background: #475569; border-color: #94a3b8; transform: translateY(-2px); }
 .btn-center:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
 .btn-center-highlight { border-color: #fbbf24; color: #fef08a; background: #854d0e; }
+.box-between { display: none; flex-direction: column; gap: 10px; align-items: center; background: rgba(15, 23, 42, 0.97); padding: 14px 20px; border-radius: 12px; box-shadow: 0 6px 25px rgba(0,0,0,0.8); border: 2px solid #fbbf24; backdrop-filter: blur(5px); pointer-events: auto; text-align: center; width: min(92vw, 430px); }
+#between-label { color: #fbbf24; font-weight: 900; letter-spacing: 2px; font-size: 15px; text-transform: uppercase; }
+#between-timer { font-size: clamp(44px, 8vw, 64px); font-weight: 900; color: #fff; font-variant-numeric: tabular-nums; line-height: 1; text-shadow: 0 3px 8px rgba(0,0,0,0.5); }
+.edit-score { cursor: pointer; }
+.edit-score:hover { background: #fef9c3 !important; box-shadow: inset 0 0 0 3px #f59e0b; }
 
 .tb-score-display { position: absolute; left: -50px; font-size: 30px; color: #fbbf24; font-weight: bold; display: none; }
 
@@ -247,6 +252,12 @@ body::-webkit-scrollbar { display: none; }
  </div>
 
  <div class="center-overlay">
+ <div class="box-between" id="between-box">
+ <div id="between-label">ENTRE PARCIAIS</div>
+ <div id="between-timer">01:00</div>
+ <button class="btn-center btn-center-highlight" id="btn-edit-parcial">✏️ EDITAR PLACAR DA PARCIAL</button>
+ <button class="btn-center" id="btn-start-end">▶ INICIAR END 2</button>
+ </div>
  <div class="box-stopped" id="center-stopped">
  <button class="btn-center btn-center-highlight" id="btn-next-end">PRÓXIMO END ▶</button>
  <button class="btn-center" id="btn-finish-match" style="display:none;background:#16a34a;color:white;border-color:#15803d;">✅ ENCERRAR JOGO</button>
@@ -296,10 +307,30 @@ body::-webkit-scrollbar { display: none; }
  </div>
 </div>
 
+<!-- EDIT PARTIAL MODAL (janela Entre Parciais) -->
+<div class="central-modal" id="edit-parcial-modal" style="min-width:380px;">
+<h3 id="edit-parcial-title">✏️ Editar Placar da Parcial</h3>
+<div style="display:flex;gap:28px;justify-content:center;align-items:flex-end;">
+<div style="text-align:center;">
+<div id="lbl-edit-red" style="font-weight:700;color:#dc2626;margin-bottom:8px;text-transform:uppercase;">🔴 VERMELHO</div>
+<input type="number" id="edit-red-pts" min="0" step="1" style="width:130px;padding:12px;font-size:26px;font-weight:700;text-align:center;border:2px solid #dc2626;border-radius:8px;color:#0f172a;">
+</div>
+<div style="text-align:center;">
+<div id="lbl-edit-blue" style="font-weight:700;color:#2563eb;margin-bottom:8px;text-transform:uppercase;">🔵 AZUL</div>
+<input type="number" id="edit-blue-pts" min="0" step="1" style="width:130px;padding:12px;font-size:26px;font-weight:700;text-align:center;border:2px solid #2563eb;border-radius:8px;color:#0f172a;">
+</div>
+</div>
+<div class="modal-btns">
+<button class="btn-secondary" id="btn-edit-parcial-cancel">Cancelar</button>
+<button class="btn-primary" id="btn-edit-parcial-save">Salvar</button>
+</div>
+</div>
+
 <!-- SUMULA MODAL -->
 <div class="modal-overlay" id="sumula-bg" style="z-index:10000;"></div>
 <div class="sumula-modal" id="sumula-modal">
  <h3 id="lbl-sumula-title">📄 Súmula da Partida</h3>
+ <div id="sumula-edit-hint" style="text-align:center;font-size:13px;color:#475569;margin-top:-6px;">💡 Clique em um valor de pontos para corrigir a parcial.</div>
  <div class="sumula-preview-area" id="sumula-content"></div>
  <div class="modal-btns">
  <button class="btn-secondary" id="btn-sumula-close">Fechar</button>
@@ -334,6 +365,11 @@ const I18N = {
  confirmReset: 'Zerar jogo completo e voltar à configuração?',
  confirmTB: 'Placar empatado em {s1} × {s2}.\n\nDeseja iniciar o Tiebreak?',
  popupBlocked: 'Pop-up bloqueado. Permita pop-ups para este site.',
+ betweenLabel: 'ENTRE PARCIAIS', editParcialBtn: '✏️ EDITAR PLACAR DA PARCIAL', startEndBtn: '▶ INICIAR END',
+ editParcialTitle: '✏️ Editar Placar da Parcial', lblEditRed: '🔴 VERMELHO', lblEditBlue: '🔵 AZUL',
+ save: 'Salvar', invalidPts: 'Informe um número de pontos válido (inteiro, 0 ou mais).',
+ sumulaHint: '💡 Clique em um valor de pontos para corrigir a parcial.', editCellTip: 'Clique para corrigir',
+ endWord: 'Parcial', promptParcial: 'Editar pontos do {what} ({side})', promptTotal: 'Editar placar ({side}): digite o número exato',
  // Súmula
  sumulaHeader: 'SÚMULA DE JOGO', vs: 'VERMELHO × AZUL',
  timeR: 'Tempo (V)', timeB: 'Tempo (A)', pts: 'Pontos', partial: 'PARCIAL',
@@ -362,6 +398,11 @@ const I18N = {
  confirmReset: 'Reset complete game and return to setup?',
  confirmTB: 'Score tied at {s1} × {s2}.\n\nStart Tiebreak?',
  popupBlocked: 'Pop-up blocked. Allow pop-ups for this site.',
+ betweenLabel: 'BETWEEN ENDS', editParcialBtn: '✏️ EDIT LAST END SCORE', startEndBtn: '▶ START END',
+ editParcialTitle: '✏️ Edit Last End Score', lblEditRed: '🔴 RED', lblEditBlue: '🔵 BLUE',
+ save: 'Save', invalidPts: 'Enter a valid point count (whole number, 0 or more).',
+ sumulaHint: '💡 Click a score value to correct that end.', editCellTip: 'Click to correct',
+ endWord: 'End', promptParcial: 'Edit points of {what} ({side})', promptTotal: 'Edit score ({side}): type the exact number',
  sumulaHeader: 'MATCH SCORESHEET', vs: 'RED × BLUE',
  timeR: 'Time (R)', timeB: 'Time (B)', pts: 'Points', partial: 'PARTIAL',
  finalScore: 'FINAL SCORE', violsRed: 'VIOLATIONS (RED):', violsBlue: 'VIOLATIONS (BLUE):',
@@ -388,6 +429,11 @@ const I18N = {
  confirmReset: '¿Reiniciar juego completo y volver a la configuración?',
  confirmTB: 'Marcador empatado en {s1} × {s2}.\n\n¿Iniciar Tiebreak?',
  popupBlocked: 'Pop-up bloqueado. Permite pop-ups para este sitio.',
+ betweenLabel: 'ENTRE PARCIALES', editParcialBtn: '✏️ EDITAR PLACAR DEL PARCIAL', startEndBtn: '▶ COMENZAR END',
+ editParcialTitle: '✏️ Editar Placar del Parcial', lblEditRed: '🔴 ROJO', lblEditBlue: '🔵 AZUL',
+ save: 'Guardar', invalidPts: 'Introduce una puntuación válida (entero, 0 o más).',
+ sumulaHint: '💡 Haz clic en una puntuación para corregir el parcial.', editCellTip: 'Clic para corregir',
+ endWord: 'Parcial', promptParcial: 'Editar puntos del {what} ({side})', promptTotal: 'Editar marcador ({side}): introduce el número exacto',
  sumulaHeader: 'ACTA DE JUEGO', vs: 'ROJO × AZUL',
  timeR: 'Tiempo (R)', timeB: 'Tiempo (A)', pts: 'Puntos', partial: 'PARCIAL',
  finalScore: 'PUNTUACIÓN FINAL', violsRed: 'VIOLACIONES (ROJO):', violsBlue: 'VIOLACIONES (AZUL):',
@@ -439,6 +485,13 @@ function applyLang(lang) {
  document.getElementById('lbl-sumula-title').textContent = t('sumulaTitle');
  document.getElementById('btn-sumula-close').textContent = t('sumulaClose');
  document.getElementById('btn-sumula-print').textContent = t('printPdf');
+ document.getElementById('btn-edit-parcial').textContent = t('editParcialBtn');
+ document.getElementById('edit-parcial-title').textContent = t('editParcialTitle');
+ document.getElementById('lbl-edit-red').textContent = t('lblEditRed');
+ document.getElementById('lbl-edit-blue').textContent = t('lblEditBlue');
+ document.getElementById('btn-edit-parcial-cancel').textContent = t('cancel');
+ document.getElementById('btn-edit-parcial-save').textContent = t('save');
+ document.getElementById('sumula-edit-hint').textContent = t('sumulaHint');
  // Re-render if game active
  if (state) updateCounters();
 }
@@ -631,6 +684,7 @@ function getViolGroups() { return VIOL_GROUPS[currentLang] || VIOL_GROUPS.pt; }
 // ══════════════════════════════════════════════════════════════════════
 let state = null;
 let timerInterval = null;
+let betweenInterval = null;
 let activeViolSide = null;
 let selectedClass = null;
 
@@ -659,6 +713,7 @@ function loadState() {
  if (!Array.isArray(state.p1.penalties)) state.p1.penalties = [];
  if (!Array.isArray(state.p2.penalties)) state.p2.penalties = [];
  if (!Array.isArray(state.partials)) state.partials = [];
+ if (state.finished) state.betweenEnds = null;
  return true;
  }
  } catch(_) {}
@@ -698,6 +753,7 @@ function startGame() {
 }
 
 function toggleTimer(side) {
+ if (state && state.betweenEnds) return;
  if (state.activeTimer === side || side === 'stop') { state.activeTimer = null; clearInterval(timerInterval); }
  else {
  state.activeTimer = side; clearInterval(timerInterval);
@@ -711,15 +767,32 @@ function toggleTimer(side) {
 }
 
 function adjustScore(side, delta) {
- if (!state || state.finished) return;
+ if (!state || state.finished || state.betweenEnds) return;
  const inTB = state.p1.tbScore !== null;
  if (inTB) { if (state[side].tbScore === null) state[side].tbScore = 0; state[side].tbScore = Math.max(0, state[side].tbScore + delta); }
  else { state[side].score = Math.max(0, state[side].score + delta); }
  updateCounters(); saveState();
 }
 
+// Clique no número do placar ao vivo → digita o valor exato (substitui o antigo "+1").
+// Fora de tiebreak ajusta o total acumulado (a parcial em andamento recebe esse
+// valor no fechamento do end); dentro do tiebreak ajusta o total de TB.
+function editLiveScore(side) {
+ if (!state || state.finished || state.betweenEnds) return;
+ const inTB = state.p1.tbScore !== null;
+ const cur = inTB ? (state[side].tbScore === null ? 0 : state[side].tbScore) : state[side].score;
+ const sideName = side === 'p1' ? t('defaultRed') : t('defaultBlue');
+ const v = prompt(t('promptTotal').replace('{side}', sideName), String(cur));
+ if (v === null) return;
+ const n = parseInt(String(v).trim(), 10);
+ if (isNaN(n) || n < 0) { alert(t('invalidPts')); return; }
+ if (inTB) { state[side].tbScore = n; }
+ else { state[side].score = n; }
+ updateCounters(); saveState();
+}
+
 function adjustBalls(side, delta) {
- if (!state || state.finished) return;
+ if (!state || state.finished || state.betweenEnds) return;
  state[side].ballsUsed = Math.max(0, Math.min(state.ballsPerEnd, state[side].ballsUsed + delta));
  updateCounters(); saveState();
 }
@@ -749,11 +822,104 @@ function nextEnd() {
  state.p1.seconds = state.timerPerEnd; state.p2.seconds = state.timerPerEnd;
  state.p1.ballsUsed = 0; state.p2.ballsUsed = 0;
  state.activeTimer = null; clearInterval(timerInterval);
+ startBetweenEnds();
+}
+
+// ── JANELA ENTRE PARCIAIS (60 s) ─────────────────────────────────────────
+// Depois de confirmar um end que não encerra o jogo: tela automática de
+// 60 s durante a qual o placar da parcial recém-fechada ainda pode ser
+// corrigido (mesmo comportamento do SCBP Web — 'Entre Parciais').
+function beep() {
+ try {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  const ctx = new Ctx();
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.type = 'sine'; o.frequency.value = 880; g.gain.value = 0.25;
+  o.start(); o.stop(ctx.currentTime + 0.4);
+  setTimeout(() => { try { ctx.close(); } catch(_) {} }, 600);
+ } catch(_) {}
+}
+
+function startBetweenEnds() {
+ if (!state || state.finished) return;
+ if (betweenInterval) clearInterval(betweenInterval);
+ clearInterval(timerInterval); state.activeTimer = null;
+ state.betweenEnds = { secondsLeft: 60 };
+ betweenInterval = setInterval(tickBetween, 1000);
+ saveState(); updateCounters();
+}
+
+function tickBetween() {
+ if (!state || !state.betweenEnds) { stopBetweenWindow(); return; }
+ state.betweenEnds.secondsLeft--;
+ if (state.betweenEnds.secondsLeft === 15) beep();
+ if (state.betweenEnds.secondsLeft <= 0) { stopBetweenWindow(); return; }
+ saveState(); updateCounters();
+}
+
+function stopBetweenWindow() {
+ if (betweenInterval) { clearInterval(betweenInterval); betweenInterval = null; }
+ if (state) { state.betweenEnds = null; saveState(); }
+ if (state) updateCounters();
+}
+
+// ── EDIÇÃO DE PARCIAL (janela de 60 s e súmula) ───────────────────────────
+// Os parciais são acumulados: editar um desloca todos os parciais seguintes
+// e o total acumulado pelo mesmo delta, mantendo súmula, telão e placar
+// ao vivo consistentes entre si.
+function applyPartialEdit(idx, newS1, newS2) {
+ const p = state.partials[idx];
+ if (!p) return;
+ const d1 = newS1 - p.s1, d2 = newS2 - p.s2;
+ if (d1 === 0 && d2 === 0) return;
+ for (let i = idx; i < state.partials.length; i++) { state.partials[i].s1 += d1; state.partials[i].s2 += d2; }
+ if (p.isTB) { if (state.p1.tbScore !== null) state.p1.tbScore += d1; if (state.p2.tbScore !== null) state.p2.tbScore += d2; }
+ else { state.p1.score += d1; state.p2.score += d2; }
+}
+
+function openEditParcialModal() {
+ if (!state || state.partials.length === 0) return;
+ const p = state.partials[state.partials.length - 1];
+ document.getElementById('edit-red-pts').value = p.s1;
+ document.getElementById('edit-blue-pts').value = p.s2;
+ document.getElementById('modal-bg').style.display = 'block';
+ document.getElementById('edit-parcial-modal').style.display = 'flex';
+}
+
+function closeEditParcialModal() {
+ document.getElementById('modal-bg').style.display = 'none';
+ document.getElementById('edit-parcial-modal').style.display = 'none';
+}
+
+function saveEditParcial() {
+ if (!state || state.partials.length === 0) return;
+ const r = parseInt(document.getElementById('edit-red-pts').value, 10);
+ const b = parseInt(document.getElementById('edit-blue-pts').value, 10);
+ if (isNaN(r) || isNaN(b) || r < 0 || b < 0) { alert(t('invalidPts')); return; }
+ applyPartialEdit(state.partials.length - 1, r, b);
+ closeEditParcialModal();
  updateCounters(); saveState();
 }
 
+function editSumulaCell(idx, side, label) {
+ const p = state.partials[idx];
+ if (!p) return;
+ const isRed = side === 's1';
+ const cur = isRed ? p.s1 : p.s2;
+ const sideName = isRed ? t('defaultRed') : t('defaultBlue');
+ const v = prompt(t('promptParcial').replace('{what}', label).replace('{side}', sideName), String(cur));
+ if (v === null) return;
+ const n = parseInt(String(v).trim(), 10);
+ if (isNaN(n) || n < 0) { alert(t('invalidPts')); return; }
+ const keep = isRed ? p.s2 : p.s1;
+ applyPartialEdit(idx, isRed ? n : cur, isRed ? keep : n);
+ updateCounters(); saveState();
+ showSumulaPreview();
+}
+
 function openViolationModal(side) {
- if (!state || state.finished) return;
+ if (!state || state.finished || state.betweenEnds) return;
  activeViolSide = side;
  const label = side === 'p1' ? '🔴 ' + state.p1.name : '🔵 ' + state.p2.name;
  document.getElementById('viol-modal-title').textContent = t('violTitle') + ' — ' + label;
@@ -807,10 +973,23 @@ function updateCounters() {
  document.getElementById('p2-time-disp').textContent = fmtTime(state.p2.seconds);
  document.getElementById('btn-play-p1').textContent = state.activeTimer === 'p1' ? '⏸' : '▶';
  document.getElementById('btn-play-p2').textContent = state.activeTimer === 'p2' ? '⏸' : '▶';
- document.getElementById('header-end').textContent = inTB ? 'TIEBREAK' : `END ${state.currentEnd}`;
+ const inBetween = !state.finished && !!state.betweenEnds;
+ document.getElementById('header-end').textContent = inBetween ? t('betweenLabel') : (inTB ? 'TIEBREAK' : `END ${state.currentEnd}`);
  renderBalls('p1'); renderBalls('p2');
  renderViolList('p1'); renderViolList('p2');
  renderPenaltyChips('p1'); renderPenaltyChips('p2');
+ const betweenBox = document.getElementById('between-box'), stoppedBox = document.getElementById('center-stopped');
+ if (inBetween) {
+  stoppedBox.style.display = 'none';
+  betweenBox.style.display = 'flex';
+  document.getElementById('between-label').textContent = t('betweenLabel');
+  document.getElementById('between-timer').textContent = fmtTime(state.betweenEnds.secondsLeft);
+  document.getElementById('btn-start-end').textContent = t('startEndBtn').replace('END', 'END ' + state.currentEnd);
+  document.getElementById('btn-edit-parcial').textContent = t('editParcialBtn');
+ } else {
+  betweenBox.style.display = 'none';
+  stoppedBox.style.display = 'flex';
+ }
  const btnNext = document.getElementById('btn-next-end'), btnFinish = document.getElementById('btn-finish-match');
  if (state.finished) { btnNext.style.display = 'none'; btnFinish.style.display = 'block'; btnFinish.textContent = t('viewSumula'); btnFinish.onclick = showSumulaPreview; }
  else if (inTB) { btnNext.textContent = t('finishTB'); btnNext.style.display = 'block'; btnFinish.style.display = 'none'; }
@@ -860,7 +1039,7 @@ function renderAll() { updateCounters(); }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ── SUMULA TRILINGUE ─────────────────────────────────────────────────
-function buildSumulaHTML() {
+function buildSumulaHTML(editable) {
  const loc = currentLang === 'en' ? 'en-US' : currentLang === 'es' ? 'es-ES' : 'pt-BR';
  const date = new Date(state.startedAt).toLocaleDateString(loc);
  const time = new Date(state.startedAt).toLocaleTimeString(loc, { hour:'2-digit', minute:'2-digit' });
@@ -888,11 +1067,13 @@ function buildSumulaHTML() {
  if (isTB) tbRendered++;
  const ps1 = p ? p.s1 : '-', ps2 = p ? p.s2 : '-';
  const pt1 = p ? (p.t1 || '') : '', pt2 = p ? (p.t2 || '') : '';
+ const whatLabel = p ? (isTB ? label : t('endWord') + ' ' + (i + 1)) : '';
+ const editAttr = (sideKey) => editable && p ? ` class="edit-score" data-idx="${i}" data-side="${sideKey}" data-label="${esc(whatLabel)}" title="${esc(t('editCellTip'))}"` : '';
  partialsRows += `<tr>
  <td style="border:1px solid #000;padding:10px;font-size:18px;font-weight:bold;color:#000;">${esc(pt1)}</td>
- <td style="border:1px solid #000;padding:10px;font-weight:bold;font-size:24px;color:#dc2626;">${ps1}</td>
+ <td${editAttr('s1')} style="border:1px solid #000;padding:10px;font-weight:bold;font-size:24px;color:#dc2626;">${ps1}</td>
  <td style="border:1px solid #000;padding:10px;font-weight:bold;font-size:18px;background:#f8fafc;color:#000;">${label}</td>
- <td style="border:1px solid #000;padding:10px;font-weight:bold;font-size:24px;color:#2563eb;">${ps2}</td>
+ <td${editAttr('s2')} style="border:1px solid #000;padding:10px;font-weight:bold;font-size:24px;color:#2563eb;">${ps2}</td>
  <td style="border:1px solid #000;padding:10px;font-size:18px;font-weight:bold;color:#000;">${esc(pt2)}</td>
  </tr>`;
  }
@@ -937,15 +1118,17 @@ function buildSumulaHTML() {
 
 function showSumulaPreview() {
  if (!state) return;
- document.getElementById('sumula-content').innerHTML = buildSumulaHTML();
+ document.getElementById('sumula-content').innerHTML = buildSumulaHTML(true);
+ document.getElementById('sumula-content').querySelectorAll('.edit-score').forEach(cell => { cell.addEventListener('click', () => editSumulaCell(+cell.dataset.idx, cell.dataset.side, cell.dataset.label)); });
  document.getElementById('sumula-bg').style.display = 'block';
  document.getElementById('sumula-modal').style.display = 'flex';
 }
 function closeSumulaPreview() { document.getElementById('sumula-bg').style.display = 'none'; document.getElementById('sumula-modal').style.display = 'none'; }
-function printSumula() { document.getElementById('print-area').innerHTML = buildSumulaHTML(); closeSumulaPreview(); setTimeout(() => window.print(), 200); }
+function printSumula() { document.getElementById('print-area').innerHTML = buildSumulaHTML(false); closeSumulaPreview(); setTimeout(() => window.print(), 200); }
 
 function resetGame() {
  if (!confirm(t('confirmReset'))) return;
+ stopBetweenWindow();
  clearInterval(timerInterval); state = null; selectedClass = null;
  try { localStorage.removeItem('placar_bocha_state'); } catch(_) {}
  document.getElementById('game-screen').style.display = 'none';
@@ -1011,14 +1194,18 @@ document.getElementById('btn-play-p1').onclick = () => toggleTimer('p1');
 document.getElementById('btn-play-p2').onclick = () => toggleTimer('p2');
 document.getElementById('btn-viol-cancel').onclick = closeViolationModal;
 document.getElementById('btn-viol-confirm').onclick = confirmViolation;
-document.getElementById('modal-bg').onclick = closeViolationModal;
+document.getElementById('modal-bg').onclick = () => { closeViolationModal(); closeEditParcialModal(); };
 document.getElementById('btn-sumula-close').onclick = closeSumulaPreview;
 document.getElementById('sumula-bg').onclick = closeSumulaPreview;
 document.getElementById('btn-sumula-print').onclick = printSumula;
+document.getElementById('btn-edit-parcial').onclick = openEditParcialModal;
+document.getElementById('btn-start-end').onclick = () => stopBetweenWindow();
+document.getElementById('btn-edit-parcial-cancel').onclick = closeEditParcialModal;
+document.getElementById('btn-edit-parcial-save').onclick = saveEditParcial;
 document.querySelectorAll('.btn-ball-ctrl').forEach(btn => { btn.onclick = () => adjustBalls(btn.dataset.side, +btn.dataset.dir); });
 document.querySelectorAll('.btn-viol').forEach(btn => { btn.onclick = () => openViolationModal(btn.dataset.side); });
-document.getElementById('p1-end-score').onclick = () => adjustScore('p1', 1);
-document.getElementById('p2-end-score').onclick = () => adjustScore('p2', 1);
+document.getElementById('p1-end-score').onclick = () => editLiveScore('p1');
+document.getElementById('p2-end-score').onclick = () => editLiveScore('p2');
 
 // INIT
 (function init() {
@@ -1027,6 +1214,7 @@ document.getElementById('p2-end-score').onclick = () => adjustScore('p2', 1);
  document.getElementById('game-screen').style.display = 'flex';
  document.getElementById('header-class').textContent = state.classCode || '—';
  renderAll();
+ if (state.betweenEnds && state.betweenEnds.secondsLeft > 0) { clearInterval(timerInterval); state.activeTimer = null; betweenInterval = setInterval(tickBetween, 1000); }
  }
 })();
 </script>
